@@ -1,0 +1,45 @@
+"""
+Bazel Modules file for TrentonBot. This defines the
+bazel packages that we are using.
+"""
+
+# Module Declaration
+module(
+    name = "trentonbot",
+    version = "1.0.0",
+    repo_name = "TrentonBot",
+)
+
+# Project Dependencies
+bazel_dep(name = "aspect_bazel_lib", version = "2.5.3")
+bazel_dep(name = "gazelle", version = "0.35.0")
+bazel_dep(name = "rules_go", version = "0.45.1")
+bazel_dep(name = "rules_oci", version = "1.6.0")
+bazel_dep(name = "rules_python", version = "0.29.0")
+
+# Extensions
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(
+    python_version = "3.11",
+)
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "pypi",
+    python_version = "3.11",
+    requirements_lock = "//:requirements_lock.txt",
+)
+use_repo(pip, "pypi")
+
+# Define our base images for rules_oci to build docker images from
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+
+oci.pull(
+    name = "py3.11",
+    image = "index.docker.io/library/python",
+    digest = "sha256:47d0618fb878d93e1b8cacb184fd8f727ae95c1b85d5959723e1d3e1848e2aba",
+    platforms = [
+        "linux/amd64",
+    ],
+)
+use_repo(oci, "py3.11")

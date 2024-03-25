@@ -1,0 +1,62 @@
+load("@rules_oci//oci:defs.bzl", "oci_push", "oci_tarball")
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("//:tools/containerization/py_layer.bzl", "py_oci_image")
+
+# Put all files required for the API in this library
+py_library(
+    name = "api_src",
+    srcs = ["api.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@pypi//fastapi:pkg",
+    ],
+)
+
+# This is how we execute the API. This forces the API
+# to run under uvicorn, which serves the app for the user.
+py_binary(
+    name = "main",
+    srcs = ["main.py"],
+    args = [
+        "src.api.v1.api:app",
+        "--host",
+        "0.0.0.0",
+    ],
+    main = "main.py",
+    deps = [
+        ":api_src",
+        "@pypi//uvicorn:pkg",
+    ],
+)
+
+# This target compiles the docker image. This can only be invoked
+# with `bazel build //(...)`, and will save the image layers in your
+# bazel-bin folder.
+py_oci_image(
+    name = "image",
+    base = "@py3.11",
+    binary = ":main",
+    cmd = [
+        "src.api.v1.api:app",
+        "--host",
+        "0.0.0.0",
+    ],
+    entrypoint = ["src/api/v1/main"],
+    exposed_ports = ["8000"],
+)
+
+# This target creates a target of the docker image when run with
+# `bazel build //(...)`, AND can be used to load the image locally
+# when run with `bazel run //(...)`.
+oci_tarball(
+    name = "tarball",
+    image = ":image",
+    repo_tags = ["trentonbot_api_v1:latest"],
+)
+
+oci_push(
+    name = "push",
+    image = ":image",
+    remote_tags = ["v0.0.1"],
+    repository = "trentonbot_api_v1",
+)
