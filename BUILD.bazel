@@ -1,3 +1,4 @@
+load("@rules_multirun//:defs.bzl", "command", "multirun")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
 # This rule adds a convenient way to update the requirements file.
@@ -6,4 +7,19 @@ compile_pip_requirements(
     src = "requirements.in",
     requirements_txt = "requirements_lock.txt",
     requirements_windows = "requirements_windows.txt",
+)
+
+# Set up commands to build all images in the project
+command(
+    name = "api_v1_img",
+    command = "//src/api/v1:tarball",
+    visibility = ["//visibility:public"],
+)
+
+multirun(
+    name = "build_all_imgs",
+    commands = [
+        ":api_v1_img",
+    ],
+    jobs = 0,
 )

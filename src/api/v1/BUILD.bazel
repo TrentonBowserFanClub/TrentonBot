@@ -6,7 +6,6 @@ load("//:tools/containerization/py_layer.bzl", "py_oci_image")
 py_library(
     name = "api_src",
     srcs = ["api.py"],
-    visibility = ["//visibility:public"],
     deps = [
         "@pypi//fastapi:pkg",
     ],
@@ -52,6 +51,7 @@ oci_tarball(
     name = "tarball",
     image = ":image",
     repo_tags = ["trentonbot_api_v1:latest"],
+    visibility = ["//visibility:public"],
 )
 
 oci_push(
