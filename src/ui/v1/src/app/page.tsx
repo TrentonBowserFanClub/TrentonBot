@@ -2,7 +2,6 @@
 import { useRef, useEffect, useInsertionEffect } from "react";
 
 export default function Home() {
-
   const wsRef = useRef(null);
   const canvasRef = useRef(null);
 
