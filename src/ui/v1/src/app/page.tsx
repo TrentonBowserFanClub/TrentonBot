@@ -2,22 +2,20 @@
 import { useRef, useEffect, useInsertionEffect } from "react";
 
 export default function Home() {
-  const wsRef = useRef(null);
-  const canvasRef = useRef(null);
+  const ws = new WebSocket('ws://localhost:8000/ws');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useInsertionEffect(() => {
-    const ws = new WebSocket('ws://localhost:8000/ws');
-    wsRef.current = ws;
-
+    
     ws.onmessage = (event) => {
       if (event.data instanceof Blob) {
         const reader = new FileReader();
         reader.onload = () => {
           const img = new Image();
           img.onload = () => {
-            const canvas = canvasRef.current;
+            const canvas = canvasRef.current as HTMLCanvasElement;
             const context = canvas?.getContext('2d');
-            if (context) {
+            if (context && canvas) {
               canvas.width = img.width;
               canvas.height = img.height;
               context.drawImage(img, 0, 0);
@@ -43,7 +41,7 @@ export default function Home() {
   return (
     <main className="min-h-screen w-full">
       <div className="flex flex-col items-center justify-center min-h-screen max-h-screen overflow-hidden w-full">
-        <canvas ref={canvasRef} className="h-3/5 w-3/5" alt="Trenton" />
+        <canvas ref={canvasRef} className="h-3/5 w-3/5" />
       </div>
     </main>
   );

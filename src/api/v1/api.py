@@ -17,7 +17,8 @@ def read_root():
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
-    
+
+# https://stackoverflow.com/a/70626324
 @app.websocket("/ws")
 async def get_stream(websocket: WebSocket):
     await websocket.accept()
