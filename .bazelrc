@@ -1,0 +1,5 @@
+# Bazel configurations set for this repository. You
+
+# can also set local configs in your ~/.bazelrc file.
+
+common --enable_bzlmod

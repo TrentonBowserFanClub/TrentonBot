@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+concurrency:
+  # Cancel previous actions from the same PR: https://stackoverflow.com/a/72408109
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Checkout
+        uses: actions/checkout@v4
+      - name: 🌿 Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.8.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+          bazelrc: |
+            build --color=yes
+            build --show_timestamps
+      - name: 🗒️ Track Current Files
+        run: touch /tmp/pre_fmt
+      - name: 🧹 Format Repository
+        run: bazel run //:format
+      - name: 👀 Detect Diff
+        run: |
+          set +x
+          formatted_files=$(find ./config ./src ./tools -newer /tmp/pre_fmt)
+          num_formatted_files=$(find ./config ./src ./tools -newer /tmp/pre_fmt | wc -l)
+
+          if [ "$num_formatted_files" -gt "0" ]; then
+            echo "❌🔥 Bad code detected! The following files would be reformatted:"
+            echo "$formatted_files"
+            exit 1
+          fi
