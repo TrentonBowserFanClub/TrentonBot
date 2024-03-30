@@ -6,7 +6,7 @@ import asyncio
 import cv2
 
 app = FastAPI()
-camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 templates = Jinja2Templates(directory="templates")
 
 
@@ -32,6 +32,6 @@ async def get_stream(websocket: WebSocket):
             else:
                 ret, buffer = cv2.imencode(".jpg", frame)
                 await websocket.send_bytes(buffer.tobytes())
-            await asyncio.sleep(0.03)
+            await asyncio.sleep(0.01)
     except (WebSocketDisconnect, ConnectionClosed):
         print("Client disconnected")

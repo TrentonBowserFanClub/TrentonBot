@@ -11,10 +11,11 @@ python3.11 -m venv venv
 ```
 
 From here, you can source your venv with the following commands.
-Windows, probably:
+
+Windows:
 
 ```
-./venv/bin/Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
 Linux:
