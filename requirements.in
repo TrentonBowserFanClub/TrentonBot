@@ -1,2 +1,6 @@
+asyncio
 fastapi
+jinja2
+opencv-python
 uvicorn[standard]
+websockets
