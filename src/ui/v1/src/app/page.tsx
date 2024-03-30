@@ -1,5 +1,6 @@
 "use client"
 import { useRef, useEffect, useInsertionEffect, useState } from "react";
+import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
 
 export default function Home() {
   const ws = new WebSocket('ws://localhost:8000/ws');
@@ -96,20 +97,18 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    if (left === 1 || up === 1 || right === 1 || down === 1) {
-      fetch('http://localhost:8000/command', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          left,
-          up,
-          right,
-          down
-        }),
-      });
-    }
+    fetch('http://localhost:8000/command', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        left,
+        up,
+        right,
+        down
+      }),
+    });
   }, [down, left, right, up])
 
   return (
@@ -121,7 +120,34 @@ export default function Home() {
           </div>
           <div className="col-span-2 bg-gradient-to-br from-red to-yellow">
             <div className="flex flex-col items-center justify-center h-full">
-              <button
+              <div className="grid grid-cols-3 w-1/3">
+                <div className="aspect-square"/>
+                <div className={up ? "border-green text-green" : "border-blue text-blue"}>
+                  <div className="border-4 rounded-[50%] aspect-square flex justify-center items-center">
+                    <FaArrowUp size={32}/>
+                  </div>
+                </div>
+                <div className="aspect-square"/>
+                <div className={left ? "border-green text-green" : "border-blue text-blue"}>
+                  <div className="border-4 rounded-[50%] aspect-square flex justify-center items-center">
+                    <FaArrowLeft size={32}/>
+                  </div>
+                </div>
+                <div className="aspect-square"/>
+                <div className={right ? "border-green text-green" : "border-blue text-blue"}>
+                  <div className="border-4 rounded-[50%] aspect-square flex justify-center items-center">
+                    <FaArrowRight size={32}/>
+                  </div>
+                </div>
+                <div className="aspect-square"/>
+                <div className={down ? "border-green text-green" : "border-blue text-blue"}>
+                  <div className="border-4 rounded-[50%] aspect-square flex justify-center items-center">
+                    <FaArrowDown size={32}/>
+                  </div>
+                </div>
+                <div className="aspect-square"/>
+              </div>
+              {/* <button
                 className="arrow-button"
                 onClick={() => setDirection("up")}
               >
@@ -144,7 +170,7 @@ export default function Home() {
                 onClick={() => setDirection("right")}
               >
                 Right
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
