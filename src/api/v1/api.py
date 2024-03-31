@@ -1,8 +1,13 @@
-from typing import Union
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from robot import (
+    Position2D,
+    RobotControl,
+    DynamixelMotor,
+    DYNAMIXEL_MX_12_ADDR_CONFIG,
+)
 import asyncio
 import cv2
 
@@ -21,6 +26,13 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+
+motors = [
+    DynamixelMotor(10, DYNAMIXEL_MX_12_ADDR_CONFIG, Position2D(0, 0, 0)),
+    DynamixelMotor(11, DYNAMIXEL_MX_12_ADDR_CONFIG, Position2D(0, 0, 0), True),
+]
+ctrl = RobotControl("/dev/ttyUSB0", 1, motors)
+ctrl.init(1000000)
 
 
 # https://stackoverflow.com/a/70626324
@@ -43,5 +55,10 @@ async def get_stream(websocket: WebSocket):
 @app.post("/command")
 async def command(request: Request):
     data = await request.json()
-    print(data)
+
+    x_val = -data.get("left", 0) + data.get("right", 0)
+    y_val = -data.get("down", 0) + data.get("up", 0)
+
+    ctrl.set_velocity(Position2D(x_val, y_val, 0))
+
     return {"status": "success"}
