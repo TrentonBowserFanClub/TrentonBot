@@ -44,4 +44,5 @@ async def get_stream(websocket: WebSocket):
 async def command(request: Request):
     data = await request.json()
     print(data)
+    # TODO - ROS publisher
     return {"status": "success"}
