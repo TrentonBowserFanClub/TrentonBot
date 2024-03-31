@@ -147,30 +147,6 @@ export default function Home() {
                 </div>
                 <div className="aspect-square"/>
               </div>
-              {/* <button
-                className="arrow-button"
-                onClick={() => setDirection("up")}
-              >
-                Up
-              </button>
-              <button
-                className="arrow-button"
-                onClick={() => setDirection("down")}
-              >
-                Down
-              </button>
-              <button
-                className="arrow-button"
-                onClick={() => setDirection("left")}
-              >
-                Left
-              </button>
-              <button
-                className="arrow-button"
-                onClick={() => setDirection("right")}
-              >
-                Right
-              </button> */}
             </div>
           </div>
         </div>

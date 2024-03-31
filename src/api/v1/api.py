@@ -1,5 +1,4 @@
 from typing import Union
-import json
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
 from fastapi.templating import Jinja2Templates
@@ -23,6 +22,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+
 # https://stackoverflow.com/a/70626324
 @app.websocket("/ws")
 async def get_stream(websocket: WebSocket):
@@ -39,8 +39,9 @@ async def get_stream(websocket: WebSocket):
     except (WebSocketDisconnect, ConnectionClosed):
         print("Client disconnected")
 
+
 @app.post("/command")
 async def command(request: Request):
     data = await request.json()
-    data_dict = json.loads(data)
+    print(data)
     return {"status": "success"}
