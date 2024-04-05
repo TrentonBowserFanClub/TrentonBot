@@ -1,0 +1,15 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+
+py_library(
+    name = "linalg_src",
+    srcs = ["linalg.py"],
+    deps = [
+        "@pypi//numpy:pkg",
+    ],
+)
+
+py_test(
+    name = "linalg_test",
+    srcs = ["linalg_test.py"],
+    deps = [":linalg_src"],
+)

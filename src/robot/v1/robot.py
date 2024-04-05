@@ -2,117 +2,23 @@
 import math
 from typing import Optional
 import dynamixel_sdk as dynamixel
-from dataclasses import dataclass
 import logging
+from structs import DynamixelMotorAddressConfig, MemorySegment
+from config import DYNAMIXEL_MX_12_ADDR_CONFIG
 
 logger = logging.getLogger(__file__)
-
-
-@dataclass
-class Vector2D:
-    x: float
-    y: float
-
-    def __add__(self, other):
-        assert isinstance(other, Vector2D)
-
-        return Vector2D(self.x + other.x, self.y + other.y)
-
-    def __iadd__(self, other):
-        assert isinstance(other, Vector2D)
-
-        self.x += other.x
-        self.y += other.y
-
-    def __sub__(self, other):
-        assert isinstance(other, Vector2D)
-
-        return Vector2D(self.x - other.x, self.y - other.y)
-
-    def __isub__(self, other):
-        assert isinstance(other, Vector2D)
-
-        self.x -= other.x
-        self.y -= other.y
-
-
-@dataclass
-class Rotation2D:
-    theta: float
-
-
-@dataclass
-class Position2D:
-    location: Vector2D
-    rotation: Rotation2D
-
-    def __init__(self, x, y, theta):
-        self.location = Vector2D(x, y)
-        self.rotation = Rotation2D(theta)
-
-
-@dataclass
-class MemorySegment:
-    byte_offset: int
-    byte_size: int
-
-
-@dataclass
-class MotorAddressConfig:
-    torque_enable: MemorySegment
-    led_enable: MemorySegment
-    d_gain: MemorySegment
-    i_gain: MemorySegment
-    p_gain: MemorySegment
-    goal_position: MemorySegment
-    moving_speed: MemorySegment
-    torque_limit: MemorySegment
-    present_position: MemorySegment
-    present_speed: MemorySegment
-    present_load: MemorySegment
-    present_input_voltage: MemorySegment
-    present_temperature: MemorySegment
-    registered: MemorySegment
-    moving: MemorySegment
-    lock: MemorySegment
-    punch: MemorySegment
-    realtime_tick: MemorySegment
-    goal_acceleration: MemorySegment
-
-
-DYNAMIXEL_MX_12_ADDR_CONFIG = MotorAddressConfig(
-    torque_enable=MemorySegment(24, 1),
-    led_enable=MemorySegment(25, 1),
-    d_gain=MemorySegment(26, 1),
-    i_gain=MemorySegment(27, 1),
-    p_gain=MemorySegment(28, 1),
-    goal_position=MemorySegment(30, 2),
-    moving_speed=MemorySegment(32, 2),
-    torque_limit=MemorySegment(34, 2),
-    present_position=MemorySegment(36, 2),
-    present_speed=MemorySegment(38, 2),
-    present_load=MemorySegment(40, 2),
-    present_input_voltage=MemorySegment(42, 1),
-    present_temperature=MemorySegment(43, 1),
-    registered=MemorySegment(44, 1),
-    moving=MemorySegment(46, 1),
-    lock=MemorySegment(47, 1),
-    punch=MemorySegment(48, 2),
-    realtime_tick=MemorySegment(50, 2),
-    goal_acceleration=MemorySegment(73, 1),
-)
 
 
 class DynamixelMotor:
     def __init__(
         self,
         id: int,
-        address_config: MotorAddressConfig,
+        address_config: DynamixelMotorAddressConfig,
         position: Position2D,
         inverted: bool = False,
     ):
         self.id = id
-        self.address_config: MotorAddressConfig = address_config
+        self.address_config: DynamixelMotorAddressConfig = address_config
         self.position = position
         self.inverted = inverted
         self.port_handler = None
@@ -391,27 +297,12 @@ class RobotControl:
             math.pi / 2
         )
 
-        # rear left
-        motor_0_speed = min(max(clamped_y - clamped_x - command.rotation.theta, -1), 1)
-
-        # front left
-        motor_1_speed = min(max(clamped_y + clamped_x - command.rotation.theta, -1), 1)
-
-        # front right
-        motor_2_speed = min(max(clamped_y - clamped_x - command.rotation.theta, -1), 1)
-
-        # rear right
-        motor_3_speed = min(max(clamped_y + clamped_x - command.rotation.theta, -1), 1)
-
-        speeds = [motor_0_speed, motor_1_speed, motor_2_speed, motor_3_speed]
-
-        for i, motor in enumerate(self.motors):
-            speed = speeds[i]
+        for motor in self.motors:
             # TODO actual kinematics here
-            if speed < 0:
-                motor.set_moving_speed((abs(speed) * 1023) + 1023)
+            if clamped_y < 0:
+                motor.set_moving_speed((abs(clamped_y) * 1023) + 1023)
             else:
-                motor.set_moving_speed(speed * 1023)
+                motor.set_moving_speed(clamped_y * 1023)
 
         return True
 
