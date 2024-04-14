@@ -8,14 +8,16 @@ import bong from '../../public/bong.mp3';
 // @ts-ignore
 import bloop from '../../public/bloop.mp3';
 
+const URI = "192.168.42.121";
+
 export default function Home() {
-  const ws = new WebSocket('ws://localhost:8000/ws');
+  const ws = new WebSocket(`ws://${URI}:8000/ws`);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [bongSfx] = useSound(bong);
   const [bloopSfx] = useSound(bloop);
 
   const playBong = () => {
-    fetch('http://localhost:8000/sfx', {
+    fetch(`http://${URI}:8000/sfx`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +30,7 @@ export default function Home() {
   };
 
   const playBloop = () => {
-    fetch('http://localhost:8000/sfx', {
+    fetch(`http://${URI}:8000/sfx`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +133,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    fetch('http://localhost:8000/command', {
+    fetch(`http://${URI}:8000/command`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

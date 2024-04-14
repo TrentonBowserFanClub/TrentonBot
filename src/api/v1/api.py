@@ -13,17 +13,13 @@ import asyncio
 import cv2
 
 app = FastAPI()
-camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+camera = cv2.VideoCapture(0)
 templates = Jinja2Templates(directory="templates")
 mixer.init()
 
-origins = [
-    "http://localhost:3000",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
