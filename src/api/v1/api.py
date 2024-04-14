@@ -56,8 +56,10 @@ async def command(request: Request):
 
     x_val = -data.get("left", 0) + data.get("right", 0)
     y_val = -data.get("down", 0) + data.get("up", 0)
+    rl = data.get("rotateleft", 0)
+    rr = data.get("rotateright", 0)
 
-    ctrl.set_velocity(Position2D(x_val, y_val, 0))
+    ctrl.set_velocity(Position2D(x_val, y_val, rr - rl))
 
     return {"status": "success"}
 

@@ -1,6 +1,7 @@
 "use client"
 import { useRef, useEffect, useInsertionEffect, useState } from "react";
-import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
+import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp  } from "react-icons/fa";
+import { FaArrowRotateLeft, FaArrowRotateRight } from "react-icons/fa6";
 // @ts-ignore
 import useSound from 'use-sound';
 // @ts-ignore
@@ -46,6 +47,8 @@ export default function Home() {
   const [up, setUp] = useState(0);
   const [right, setRight] = useState(0);
   const [down, setDown] = useState(0);
+  const [rotateleft, setRotateLeft] = useState(0);
+  const [rotateright, setRotateRight] = useState(0);
 
   useInsertionEffect(() => {
     ws.onmessage = (event) => {
@@ -81,17 +84,23 @@ export default function Home() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
-        case "ArrowUp":
+        case "w":
           setUp(1);
           break;
-        case "ArrowDown":
+        case "s":
           setDown(1);
           break;
-        case "ArrowLeft":
+        case "a":
           setLeft(1);
           break;
-        case "ArrowRight":
+        case "d":
           setRight(1);
+          break;
+        case "q":
+          setRotateLeft(1);
+          break;
+        case "e":
+          setRotateRight(1);
           break;
         default:
           break;
@@ -108,17 +117,23 @@ export default function Home() {
   useEffect(() => {
     const handleKeyUp = (event: KeyboardEvent) => {
       switch (event.key) {
-        case "ArrowUp":
+        case "w":
           setUp(0);
           break;
-        case "ArrowDown":
+        case "s":
           setDown(0);
           break;
-        case "ArrowLeft":
+        case "a":
           setLeft(0);
           break;
-        case "ArrowRight":
+        case "d":
           setRight(0);
+          break;
+        case "q":
+          setRotateLeft(0);
+          break;
+        case "e":
+          setRotateRight(0);
           break;
         default:
           break;
@@ -142,10 +157,12 @@ export default function Home() {
         left,
         up,
         right,
-        down
+        down,
+        rotateleft,
+        rotateright,
       }),
     });
-  }, [down, left, right, up])
+  }, [down, left, right, up, rotateleft, rotateright])
 
   return (
     <main className="min-h-screen w-full">
@@ -192,21 +209,29 @@ export default function Home() {
             </a>
             <div className="flex flex-col items-center justify-center h-full">
               <div className="mb-10 space-x-10">
+                <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBloop}>
+                  BING
+                </button>
                 <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBong}>
                   BONG
                 </button>
-                <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBloop}>
-                  BLOOP
-                </button>
               </div>
               <div className="grid grid-cols-3 w-1/3">
-                <div className="aspect-square"/>
+                <div className={rotateleft ? "border-green text-green" : "border-blue text-blue"}>
+                  <div className="rounded-[50%] aspect-square flex justify-center items-center">
+                    <FaArrowRotateLeft size={32}/>
+                  </div>
+                </div>
                 <div className={up ? "border-green text-green" : "border-blue text-blue"}>
                   <div className="border-4 rounded-[50%] aspect-square flex justify-center items-center">
                     <FaArrowUp size={32}/>
                   </div>
                 </div>
-                <div className="aspect-square"/>
+                <div className={rotateright ? "border-green text-green" : "border-blue text-blue"}>
+                  <div className="rounded-[50%] aspect-square flex justify-center items-center">
+                    <FaArrowRotateRight size={32}/>
+                  </div>
+                </div>
                 <div className={left ? "border-green text-green" : "border-blue text-blue"}>
                   <div className="border-4 rounded-[50%] aspect-square flex justify-center items-center">
                     <FaArrowLeft size={32}/>
