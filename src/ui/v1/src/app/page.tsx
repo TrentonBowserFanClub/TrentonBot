@@ -1,10 +1,44 @@
 "use client"
 import { useRef, useEffect, useInsertionEffect, useState } from "react";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
+// @ts-ignore
+import useSound from 'use-sound';
+// @ts-ignore
+import bong from '../../public/bong.mp3';
+// @ts-ignore
+import bloop from '../../public/bloop.mp3';
 
 export default function Home() {
   const ws = new WebSocket('ws://localhost:8000/ws');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [bongSfx] = useSound(bong);
+  const [bloopSfx] = useSound(bloop);
+
+  const playBong = () => {
+    fetch('http://localhost:8000/sfx', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sfx: 'bong',
+      }),
+    });
+    bongSfx();
+  };
+
+  const playBloop = () => {
+    fetch('http://localhost:8000/sfx', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sfx: 'bloop',
+      }),
+    });
+    bloopSfx();
+  };
 
   const [left, setLeft] = useState(0);
   const [up, setUp] = useState(0);
@@ -155,6 +189,14 @@ export default function Home() {
               </div>
             </a>
             <div className="flex flex-col items-center justify-center h-full">
+              <div className="mb-10 space-x-10">
+                <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBong}>
+                  BONG
+                </button>
+                <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBloop}>
+                  BLOOP
+                </button>
+              </div>
               <div className="grid grid-cols-3 w-1/3">
                 <div className="aspect-square"/>
                 <div className={up ? "border-green text-green" : "border-blue text-blue"}>

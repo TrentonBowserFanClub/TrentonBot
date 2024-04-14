@@ -8,12 +8,14 @@ from robot import (
     DynamixelMotor,
     DYNAMIXEL_MX_12_ADDR_CONFIG,
 )
+from pygame import mixer
 import asyncio
 import cv2
 
 app = FastAPI()
 camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 templates = Jinja2Templates(directory="templates")
+mixer.init()
 
 origins = [
     "http://localhost:3000",
@@ -60,5 +62,18 @@ async def command(request: Request):
     y_val = -data.get("down", 0) + data.get("up", 0)
 
     ctrl.set_velocity(Position2D(x_val, y_val, 0))
+
+    return {"status": "success"}
+
+
+@app.post("/sfx")
+async def command(request: Request):
+    data = await request.json()
+
+    if data.get("sfx") == "bloop":
+        mixer.music.load("./bloop.mp3")
+    elif data.get("sfx") == "bong":
+        mixer.music.load("./bong.mp3")
+    mixer.music.play()
 
     return {"status": "success"}
