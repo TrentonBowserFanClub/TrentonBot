@@ -65,6 +65,7 @@ async def command(request: Request):
 
     return {"status": "success"}
 
+
 @app.post("/sfx")
 async def command(request: Request):
     data = await request.json()
