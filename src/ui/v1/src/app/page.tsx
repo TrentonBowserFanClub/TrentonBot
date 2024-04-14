@@ -1,8 +1,11 @@
 "use client"
 import { useRef, useEffect, useInsertionEffect, useState } from "react";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaArrowUp } from "react-icons/fa";
+// @ts-ignore
 import useSound from 'use-sound';
+// @ts-ignore
 import bong from '../../public/bong.mp3';
+// @ts-ignore
 import bloop from '../../public/bloop.mp3';
 
 export default function Home() {
