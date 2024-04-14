@@ -209,16 +209,16 @@ export default function Home() {
             </a>
             <div className="flex flex-col items-center justify-center h-full">
               <div className="mb-10 space-x-10">
+                <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBloop}>
+                  BING
+                </button>
                 <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBong}>
                   BONG
-                </button>
-                <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBloop}>
-                  BLOOP
                 </button>
               </div>
               <div className="grid grid-cols-3 w-1/3">
                 <div className={rotateleft ? "border-green text-green" : "border-blue text-blue"}>
-                  <div className="border-4 rounded-[50%] aspect-square flex justify-center items-center">
+                  <div className="rounded-[50%] aspect-square flex justify-center items-center">
                     <FaArrowRotateLeft size={32}/>
                   </div>
                 </div>
@@ -228,7 +228,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className={rotateright ? "border-green text-green" : "border-blue text-blue"}>
-                  <div className="border-4 rounded-[50%] aspect-square flex justify-center items-center">
+                  <div className="rounded-[50%] aspect-square flex justify-center items-center">
                     <FaArrowRotateRight size={32}/>
                   </div>
                 </div>
