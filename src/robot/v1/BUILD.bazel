@@ -1,0 +1,18 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+# Put all robot files in this library
+py_library(
+    name = "robot_src",
+    srcs = [
+        "config.py",
+        "robot.py",
+        "structs.py",
+    ],
+    deps = [
+        "@pypi//fastapi:pkg",
+        "@pypi//jinja2:pkg",
+        "@pypi//numpy:pkg",
+        "@pypi//opencv_python:pkg",
+        "@pypi//websockets:pkg",
+    ],
+)

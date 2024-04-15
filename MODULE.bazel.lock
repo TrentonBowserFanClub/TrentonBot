@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "4fa47c1d36ebfbfef45d2813f94b4ba9f3e8ebfef3d74978a732860e3c6b9f37",
+  "moduleFileHash": "9116b2d8fb0ce39849813bdeb4be5ffcf1ad8eabf88914f56b198ba6b8ec515d",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -3973,7 +3973,7 @@
       "os:linux,arch:amd64": {
         "bzlTransitiveDigest": "O6takntg2fy8btRIFrv9hsGqQu89+vUPw5N/OGj+EuI=",
         "recordedFileInputs": {
-          "@@//requirements_lock.txt": "76f9aa2120c2d28e6160be8d9a73b3a2510209fd5f4f20e659b0aca1fc0e7d4e"
+          "@@//requirements_lock.txt": "7f619226d8d5919afa9c944dbbecb48c08251f8ce7838b5c0d2a87db13e7d81f"
         },
         "recordedDirentsInputs": {},
         "envVariables": {},

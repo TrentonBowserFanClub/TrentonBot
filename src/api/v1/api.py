@@ -27,7 +27,9 @@ app.add_middleware(
 
 motors = [
     DynamixelMotor(10, DYNAMIXEL_MX_12_ADDR_CONFIG, Position2D(0, 0, 0)),
-    DynamixelMotor(11, DYNAMIXEL_MX_12_ADDR_CONFIG, Position2D(0, 0, 0), True),
+    DynamixelMotor(11, DYNAMIXEL_MX_12_ADDR_CONFIG, Position2D(0, 0, 0)),
+    DynamixelMotor(12, DYNAMIXEL_MX_12_ADDR_CONFIG, Position2D(0, 0, 0), True),
+    DynamixelMotor(13, DYNAMIXEL_MX_12_ADDR_CONFIG, Position2D(0, 0, 0), True),
 ]
 ctrl = RobotControl("/dev/ttyUSB0", 1, motors)
 ctrl.init(1000000)

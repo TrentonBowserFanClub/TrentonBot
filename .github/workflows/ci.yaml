@@ -38,3 +38,19 @@ jobs:
             echo "$formatted_files"
             exit 1
           fi
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Checkout
+        uses: actions/checkout@v4
+      - name: 🌿 Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.8.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+          bazelrc: |
+            build --color=yes
+            build --show_timestamps
+      - name: 🧪 Run Tests
+        run: bazel test //src/...
