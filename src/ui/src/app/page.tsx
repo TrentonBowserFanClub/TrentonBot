@@ -9,16 +9,13 @@ import bong from '../../public/bong.mp3';
 // @ts-ignore
 import bloop from '../../public/bloop.mp3';
 
-const URI = "192.168.42.121";
-
 export default function Home() {
-  const ws = new WebSocket(`ws://${URI}:8000/ws`);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [bongSfx] = useSound(bong);
   const [bloopSfx] = useSound(bloop);
 
   const playBong = () => {
-    fetch(`http://${URI}:8000/sfx`, {
+    fetch(`http://${ip}:8000/sfx`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,7 +28,7 @@ export default function Home() {
   };
 
   const playBloop = () => {
-    fetch(`http://${URI}:8000/sfx`, {
+    fetch(`http://${ip}:8000/sfx`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,8 +46,10 @@ export default function Home() {
   const [down, setDown] = useState(0);
   const [rotateleft, setRotateLeft] = useState(0);
   const [rotateright, setRotateRight] = useState(0);
+  const [ip, setIp] = useState("localhost");
 
   useInsertionEffect(() => {
+    const ws = new WebSocket(`ws://${ip}:8000/ws`);
     ws.onmessage = (event) => {
       if (event.data instanceof Blob) {
         const reader = new FileReader();
@@ -148,7 +147,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    fetch(`http://${URI}:8000/command`, {
+    fetch(`http://${ip}:8000/command`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -208,6 +207,14 @@ export default function Home() {
               </div>
             </a>
             <div className="flex flex-col items-center justify-center h-full">
+              <div>
+                <select className="w-1/2 h-10 rounded-lg border-2 border-blue" onChange={e => {
+                  setIp(e.target.value);
+                  }}>
+                  <option value="localhost">localhost</option>
+                  <option value="192.168.42.121">192.168.42.121</option>
+                </select>
+              </div>
               <div className="mb-10 space-x-10">
                 <button className=" hover:text-white text-3xl text-blue font-bold active:border-none" onClick={playBloop}>
                   BING
