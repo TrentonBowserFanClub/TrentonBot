@@ -1,7 +1,9 @@
 asyncio
+dynamixel_sdk
 fastapi
 jinja2
 numpy
 opencv-python
+pygame
 uvicorn[standard]
 websockets

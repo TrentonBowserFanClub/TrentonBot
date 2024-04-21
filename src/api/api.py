@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from robot import (
+from src.api.robot import (
     Position2D,
     RobotControl,
     DynamixelMotor,
@@ -11,6 +11,9 @@ from robot import (
 from pygame import mixer
 import asyncio
 import cv2
+import logging
+
+logger = logging.getLogger(__file__)
 
 app = FastAPI()
 camera = cv2.VideoCapture(0)
@@ -32,7 +35,18 @@ motors = [
     DynamixelMotor(13, DYNAMIXEL_MX_12_ADDR_CONFIG, Position2D(0, 0, 0), True),
 ]
 ctrl = RobotControl("/dev/ttyUSB0", 1, motors)
-ctrl.init(1000000)
+
+try:
+    ctrl.init(1000000)
+except:
+    logger.error(
+        "Unable to connect to Dynamixel, continuing without motor connection..."
+    )
+
+
+@app.get("/status")
+def status():
+    return {"status": "online"}
 
 
 # https://stackoverflow.com/a/70626324
@@ -71,9 +85,9 @@ async def command(request: Request):
     data = await request.json()
 
     if data.get("sfx") == "bloop":
-        mixer.music.load("./bloop.mp3")
+        mixer.music.load("./assets/bloop.mp3")
     elif data.get("sfx") == "bong":
-        mixer.music.load("./bong.mp3")
+        mixer.music.load("./assets/bong.mp3")
     mixer.music.play()
 
     return {"status": "success"}

@@ -7,10 +7,20 @@ py_library(
     name = "api_src",
     srcs = ["api.py"],
     deps = [
+        ":robot_src",
         "@pypi//fastapi:pkg",
         "@pypi//jinja2:pkg",
         "@pypi//opencv_python:pkg",
+        "@pypi//pygame:pkg",
         "@pypi//websockets:pkg",
+    ],
+)
+
+py_library(
+    name = "robot_src",
+    srcs = ["robot.py"],
+    deps = [
+        "@pypi//dynamixel_sdk:pkg",
     ],
 )
 
@@ -20,7 +30,7 @@ py_binary(
     name = "main",
     srcs = ["main.py"],
     args = [
-        "src.api.v2.api:app",
+        "src.api.api:app",
         "--host",
         "0.0.0.0",
     ],
@@ -39,11 +49,11 @@ py_oci_image(
     base = "@py3.11",
     binary = ":main",
     cmd = [
-        "src.api.v2.api:app",
+        "src.api.api:app",
         "--host",
         "0.0.0.0",
     ],
-    entrypoint = ["src/api/v2/main"],
+    entrypoint = ["src/api/main"],
     exposed_ports = ["8000"],
 )
 
@@ -53,7 +63,7 @@ py_oci_image(
 oci_tarball(
     name = "tarball",
     image = ":image",
-    repo_tags = ["trentonbot_api_v2:latest"],
+    repo_tags = ["trentonbot_api:latest"],
     visibility = ["//visibility:public"],
 )
 
@@ -61,5 +71,5 @@ oci_push(
     name = "push",
     image = ":image",
     remote_tags = ["v0.0.1"],
-    repository = "trentonbot_api_v2",
+    repository = "trentonbot_api",
 )

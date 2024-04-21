@@ -1,4 +1,3 @@
-# from dynamixel_sdk import *
 import math
 from typing import Optional
 import dynamixel_sdk as dynamixel
