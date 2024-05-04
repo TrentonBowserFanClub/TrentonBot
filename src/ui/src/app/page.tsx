@@ -207,8 +207,8 @@ export default function Home() {
               </div>
             </a>
             <div className="flex flex-col items-center justify-center h-full">
-              <div>
-                <select className="w-1/2 h-10 rounded-lg border-2 border-blue" onChange={e => {
+              <div className="fixed top-4 right-4">
+                <select className="h-6 bg-transparent text-blue font-bold text-lg text-right" onChange={e => {
                   setIp(e.target.value);
                   }}>
                   <option value="localhost">localhost</option>

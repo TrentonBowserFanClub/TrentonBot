@@ -5,3 +5,7 @@
 .text-transparent { 
     color: transparent !important;
 }
+
+.bg-transparent { 
+    background-color: transparent !important;
+}
