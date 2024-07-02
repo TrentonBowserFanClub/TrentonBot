@@ -12,15 +12,15 @@ compile_pip_requirements(
 
 # Set up commands to build all images in the project
 command(
-    name = "api_v2_img",
-    command = "//src/api/v2:tarball",
+    name = "api_img",
+    command = "//src/api:tarball",
     visibility = ["//visibility:public"],
 )
 
 multirun(
     name = "build_all_imgs",
     commands = [
-        ":api_v2_img",
+        ":api_img",
     ],
     jobs = 0,
 )

@@ -16,6 +16,8 @@ py_library(
     ],
 )
 
+# TODO - this will be removed in the future once robot code is
+# separated out into a separate executable
 py_library(
     name = "robot_src",
     srcs = ["robot.py"],

@@ -23,12 +23,5 @@ alias(
     }),
 )
 
-# We can test that it works with:
-# bazel run :flake8 -- --help
-py_console_script_binary(
-    name = "flake8",
-    pkg = "@pip//flake8:pkg",
-)
-
 # bazel run :shellcheck -- --help
 shellcheck_binary(name = "shellcheck")
