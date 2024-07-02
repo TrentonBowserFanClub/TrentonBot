@@ -16,3 +16,11 @@ py_library(
         "@pypi//websockets:pkg",
     ],
 )
+
+cc_binary(
+    name = "robot",
+    srcs = ["robot.cpp"],
+    deps = [
+        "@eigen",
+    ],
+)
