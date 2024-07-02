@@ -19,7 +19,10 @@ py_library(
 
 cc_binary(
     name = "robot",
-    srcs = ["robot.cpp"],
+    srcs = [
+        "robot.cpp",
+        "robot.h",
+    ],
     deps = [
         "@eigen",
     ],
