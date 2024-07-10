@@ -1,0 +1,67 @@
+cc_library(
+    name = "generic_motor_lib",
+    hdrs = [
+        "motor.h",
+    ],
+    deps = [
+        "//src/math:math_lib",
+        "//src/math:vector_lib",
+        "@eigen",
+    ],
+)
+
+cc_library(
+    name = "dynamixel_motor_lib",
+    srcs = [
+        "dynamixel_motor.cpp",
+    ],
+    hdrs = [
+        "dynamixel_motor.h",
+    ],
+    deps = [
+        ":generic_motor_lib",
+        "//src/math:math_lib",
+        "@eigen",
+    ],
+)
+
+cc_test(
+    name = "dynamixel_motor_test",
+    size = "small",
+    srcs = [
+        "dynamixel_motor_test.cpp",
+    ],
+    deps = [
+        ":dynamixel_motor_lib",
+        "@eigen",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "mock_motor_lib",
+    srcs = [
+        "mock_motor.cpp",
+    ],
+    hdrs = [
+        "mock_motor.h",
+    ],
+    deps = [
+        ":generic_motor_lib",
+        "//src/math:math_lib",
+        "@eigen",
+    ],
+)
+
+cc_test(
+    name = "mock_motor_test",
+    size = "small",
+    srcs = [
+        "mock_motor_test.cpp",
+    ],
+    deps = [
+        ":mock_motor_lib",
+        "@eigen",
+        "@googletest//:gtest_main",
+    ],
+)
