@@ -1,0 +1,18 @@
+cc_library(
+    name = "math_lib",
+    hdrs = [
+        "pid.h",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "vector_lib",
+    hdrs = [
+        "vector_math.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@eigen",
+    ],
+)

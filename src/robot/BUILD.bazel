@@ -17,13 +17,36 @@ py_library(
     ],
 )
 
+cc_library(
+    name = "robot_lib",
+    srcs = [
+        "robot.cpp",
+    ],
+    hdrs = [
+        "motor.h",
+        "robot.h",
+    ],
+    deps = ["@eigen"],
+)
+
 cc_binary(
     name = "robot",
     srcs = [
         "robot.cpp",
-        "robot.h",
     ],
     deps = [
+        "robot_lib",
+        "@eigen",
+    ],
+)
+
+cc_binary(
+    name = "main",
+    srcs = [
+        "main.cpp",
+    ],
+    deps = [
+        "robot_lib",
         "@eigen",
     ],
 )
