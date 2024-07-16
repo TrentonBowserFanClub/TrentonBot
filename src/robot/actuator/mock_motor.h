@@ -1,4 +1,6 @@
-#include "motor.h"
+#pragma once
+
+#include "imotor.h"
 #include <Eigen/Eigen>
 
 class MockMotor : IMotor {
@@ -20,31 +22,31 @@ private:
 public:
   MockMotor(int id, Location location, bool inverted = false);
 
-  bool GetPosition(int *out_position);
+  virtual bool GetPosition(int *out_position);
 
-  bool SetPosition(int position);
+  virtual bool SetPosition(int position);
 
-  bool GetSpeed(float *out_speed);
+  virtual bool GetSpeed(float *out_speed);
 
-  bool SetSpeed(float speed);
+  virtual bool SetSpeed(float speed);
 
-  bool GetAcceleration(float *out_acceleration);
+  virtual bool GetAcceleration(float *out_acceleration);
 
-  bool SetAcceleration(float acceleration);
+  virtual bool SetAcceleration(float acceleration);
 
-  bool GetPIDGain(PIDGain *out_pid_gain);
+  virtual bool GetPIDGain(PIDGain *out_pid_gain);
 
-  bool SetPIDGain(PIDGain pid_gain);
+  virtual bool SetPIDGain(PIDGain pid_gain);
 
-  bool GetLED(bool *out_enabled);
+  virtual bool GetLED(bool *out_enabled);
 
-  bool SetLED(bool enabled);
+  virtual bool SetLED(bool enabled);
 
-  bool GetEnabled(bool *out_enabled);
+  virtual bool GetEnabled(bool *out_enabled);
 
-  bool SetEnabled(bool enabled);
+  virtual bool SetEnabled(bool enabled);
 
-  bool GetMaxSpeed(float *out_speed);
+  virtual bool GetMaxSpeed(float *out_speed);
 
-  bool GetMotorLocation(Location *out_location);
+  virtual bool GetMotorLocation(Location *out_location);
 };

@@ -98,7 +98,8 @@
     "https://bcr.bazel.build/modules/rules_oci/1.6.0/MODULE.bazel": "c9bdb1b35a99f42d3c8e14eaf3209a91406e652ba2677378d6307ea4ddbdf3bc",
     "https://bcr.bazel.build/modules/rules_oci/1.6.0/source.json": "0a1553dd497d9b0db7c02809d5a44e740a215d236b6aa70ebf60806335fa75d7",
     "https://bcr.bazel.build/modules/rules_pkg/0.7.0/MODULE.bazel": "df99f03fc7934a4737122518bb87e667e62d780b610910f0447665a7e2be62dc",
-    "https://bcr.bazel.build/modules/rules_pkg/0.7.0/source.json": "c2557066e0c0342223ba592510ad3d812d4963b9024831f7f66fd0584dd8c66c",
+    "https://bcr.bazel.build/modules/rules_pkg/1.0.1/MODULE.bazel": "5b1df97dbc29623bccdf2b0dcd0f5cb08e2f2c9050aab1092fd39a41e82686ff",
+    "https://bcr.bazel.build/modules/rules_pkg/1.0.1/source.json": "bd82e5d7b9ce2d31e380dd9f50c111d678c3bdaca190cb76b0e1c71b05e1ba8a",
     "https://bcr.bazel.build/modules/rules_proto/4.0.0/MODULE.bazel": "a7a7b6ce9bee418c1a760b3d84f83a299ad6952f9903c67f19e4edd964894e06",
     "https://bcr.bazel.build/modules/rules_proto/5.3.0-21.7/MODULE.bazel": "e8dff86b0971688790ae75528fe1813f71809b5afd57facb44dad9e8eca631b7",
     "https://bcr.bazel.build/modules/rules_proto/5.3.0-21.7/source.json": "d57902c052424dfda0e71646cb12668d39c4620ee0544294d9d941e7d12bc3a9",
@@ -106,7 +107,8 @@
     "https://bcr.bazel.build/modules/rules_python/0.22.1/MODULE.bazel": "26114f0c0b5e93018c0c066d6673f1a2c3737c7e90af95eff30cfee38d0bbac7",
     "https://bcr.bazel.build/modules/rules_python/0.27.1/MODULE.bazel": "65dc875cc1a06c30d5bbdba7ab021fd9e551a6579e408a3943a61303e2228a53",
     "https://bcr.bazel.build/modules/rules_python/0.29.0/MODULE.bazel": "2ac8cd70524b4b9ec49a0b8284c79e4cd86199296f82f6e0d5da3f783d660c82",
-    "https://bcr.bazel.build/modules/rules_python/0.29.0/source.json": "ac2f1485a39e9939d79d0e4ba193cc665768918b62c03092fb3fa6684c184de8",
+    "https://bcr.bazel.build/modules/rules_python/0.31.0/MODULE.bazel": "93a43dc47ee570e6ec9f5779b2e64c1476a6ce921c48cc9a1678a91dd5f8fd58",
+    "https://bcr.bazel.build/modules/rules_python/0.31.0/source.json": "a41c836d4065888eef4377f2f27b6eea0fedb9b5adb1bab1970437373fe90dc7",
     "https://bcr.bazel.build/modules/rules_python/0.4.0/MODULE.bazel": "9208ee05fd48bf09ac60ed269791cf17fb343db56c8226a720fbb1cdf467166c",
     "https://bcr.bazel.build/modules/stardoc/0.5.0/MODULE.bazel": "f9f1f46ba8d9c3362648eea571c6f9100680efc44913618811b58cc9c02cd678",
     "https://bcr.bazel.build/modules/stardoc/0.5.1/MODULE.bazel": "1a05d92974d0c122f5ccf09291442580317cdd859f07a8655f1db9a60374f9f8",
@@ -1126,7 +1128,7 @@
     "@@rules_oci~//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "FvfkapVlk3ah8GT0eVc2uLDNEe/TtsAvPke01BE83PQ=",
-        "usagesDigest": "qwlY83bYj0/saQriHHi0QZaGGy5vqJnovFqhEda7Y2I=",
+        "usagesDigest": "gQcwF865lQuyDv0SjsrFVSfEuuz46+ZNJFBtzVGE1l8=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1144,6 +1146,23 @@
             "ruleClassName": "copy_to_directory_platform_repo",
             "attributes": {
               "platform": "windows_amd64"
+            }
+          },
+          "gcc": {
+            "bzlFile": "@@rules_oci~//oci/private:pull.bzl",
+            "ruleClassName": "oci_alias",
+            "attributes": {
+              "target_name": "gcc",
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/gcc",
+              "identifier": "sha256:sha256:c24e2fd069574a63513d749a90459eed8b0cc43f3fbb580a0296cdee3ae0df0d",
+              "platforms": {
+                "@@platforms//cpu:x86_64": "@gcc_linux_amd64",
+                "@@platforms//cpu:arm64": "@gcc_linux_arm64"
+              },
+              "bzlmod_repository": "gcc",
+              "reproducible": true
             }
           },
           "jq": {
@@ -1236,6 +1255,19 @@
               "crane_version": "v0.17.0"
             }
           },
+          "gcc_linux_amd64": {
+            "bzlFile": "@@rules_oci~//oci/private:pull.bzl",
+            "ruleClassName": "oci_pull",
+            "attributes": {
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/gcc",
+              "identifier": "sha256:sha256:c24e2fd069574a63513d749a90459eed8b0cc43f3fbb580a0296cdee3ae0df0d",
+              "platform": "linux/amd64",
+              "target_name": "gcc_linux_amd64",
+              "config_path": "@@rules_oci~~oci~oci_auth_config//:standard_authorization_config_path"
+            }
+          },
           "copy_to_directory_darwin_arm64": {
             "bzlFile": "@@aspect_bazel_lib~//lib/private:copy_to_directory_toolchain.bzl",
             "ruleClassName": "copy_to_directory_platform_repo",
@@ -1287,6 +1319,19 @@
             "ruleClassName": "yq_host_alias_repo",
             "attributes": {}
           },
+          "py3.11_linux_arm64": {
+            "bzlFile": "@@rules_oci~//oci/private:pull.bzl",
+            "ruleClassName": "oci_pull",
+            "attributes": {
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/python",
+              "identifier": "sha256:47d0618fb878d93e1b8cacb184fd8f727ae95c1b85d5959723e1d3e1848e2aba",
+              "platform": "linux/arm64",
+              "target_name": "py3.11_linux_arm64",
+              "config_path": "@@rules_oci~~oci~oci_auth_config//:standard_authorization_config_path"
+            }
+          },
           "oci_crane_darwin_arm64": {
             "bzlFile": "@@rules_oci~//oci:repositories.bzl",
             "ruleClassName": "crane_repositories",
@@ -1305,7 +1350,8 @@
               "repository": "library/python",
               "identifier": "sha256:47d0618fb878d93e1b8cacb184fd8f727ae95c1b85d5959723e1d3e1848e2aba",
               "platforms": {
-                "@@platforms//cpu:x86_64": "@py3.11_linux_amd64"
+                "@@platforms//cpu:x86_64": "@py3.11_linux_amd64",
+                "@@platforms//cpu:arm64": "@py3.11_linux_arm64"
               },
               "bzlmod_repository": "py3.11",
               "reproducible": true
@@ -1380,6 +1426,19 @@
             "ruleClassName": "copy_to_directory_platform_repo",
             "attributes": {
               "platform": "darwin_amd64"
+            }
+          },
+          "gcc_linux_arm64": {
+            "bzlFile": "@@rules_oci~//oci/private:pull.bzl",
+            "ruleClassName": "oci_pull",
+            "attributes": {
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/gcc",
+              "identifier": "sha256:sha256:c24e2fd069574a63513d749a90459eed8b0cc43f3fbb580a0296cdee3ae0df0d",
+              "platform": "linux/arm64",
+              "target_name": "gcc_linux_arm64",
+              "config_path": "@@rules_oci~~oci~oci_auth_config//:standard_authorization_config_path"
             }
           },
           "yq_linux_ppc64le": {
@@ -2419,8 +2478,8 @@
     },
     "@@rules_python~//python/extensions:python.bzl%python": {
       "general": {
-        "bzlTransitiveDigest": "oBPNwJABN+p6JSbMsW8KKLF4oq8ao8WyZfH4DbDfSlQ=",
-        "usagesDigest": "krf/R7AG+xJwRhKG0Bd78Rxh9ViR9m4KUgtBM9FXswI=",
+        "bzlTransitiveDigest": "uHZmn4VCpelMhuk7Rz8Q5oK94ttURW5KkyvXa6hRTfk=",
+        "usagesDigest": "1y/pusCNp+wkOWZo/CKb1qsCiNBD8vfoJYmQnZaHUG0=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {
@@ -2431,13 +2490,13 @@
             "bzlFile": "@@rules_python~//python:repositories.bzl",
             "ruleClassName": "python_repository",
             "attributes": {
-              "sha256": "f9f19823dba3209cedc4647b00f46ed0177242917db20fb7fb539970e384531c",
+              "sha256": "49520e3ff494708020f306e30b0964f079170be83e956be4504f850557378a22",
               "patches": [],
               "platform": "s390x-unknown-linux-gnu",
-              "python_version": "3.11.6",
-              "release_filename": "20231002/cpython-3.11.6+20231002-s390x-unknown-linux-gnu-install_only.tar.gz",
+              "python_version": "3.11.7",
+              "release_filename": "20240107/cpython-3.11.7+20240107-s390x-unknown-linux-gnu-install_only.tar.gz",
               "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20231002/cpython-3.11.6+20231002-s390x-unknown-linux-gnu-install_only.tar.gz"
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-s390x-unknown-linux-gnu-install_only.tar.gz"
               ],
               "distutils_content": "",
               "strip_prefix": "python",
@@ -2449,7 +2508,7 @@
             "bzlFile": "@@rules_python~//python/private:toolchains_repo.bzl",
             "ruleClassName": "host_toolchain",
             "attributes": {
-              "python_version": "3.11.6",
+              "python_version": "3.11.7",
               "user_repository_name": "python_3_11",
               "platforms": [
                 "aarch64-apple-darwin",
@@ -2466,7 +2525,7 @@
             "bzlFile": "@@rules_python~//python/private:toolchains_repo.bzl",
             "ruleClassName": "toolchain_aliases",
             "attributes": {
-              "python_version": "3.11.6",
+              "python_version": "3.11.7",
               "user_repository_name": "python_3_11",
               "platforms": [
                 "aarch64-apple-darwin",
@@ -2483,13 +2542,13 @@
             "bzlFile": "@@rules_python~//python:repositories.bzl",
             "ruleClassName": "python_repository",
             "attributes": {
-              "sha256": "3e26a672df17708c4dc928475a5974c3fb3a34a9b45c65fb4bd1e50504cc84ec",
+              "sha256": "b102eaf865eb715aa98a8a2ef19037b6cc3ae7dfd4a632802650f29de635aa13",
               "patches": [],
               "platform": "aarch64-unknown-linux-gnu",
-              "python_version": "3.11.6",
-              "release_filename": "20231002/cpython-3.11.6+20231002-aarch64-unknown-linux-gnu-install_only.tar.gz",
+              "python_version": "3.11.7",
+              "release_filename": "20240107/cpython-3.11.7+20240107-aarch64-unknown-linux-gnu-install_only.tar.gz",
               "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20231002/cpython-3.11.6+20231002-aarch64-unknown-linux-gnu-install_only.tar.gz"
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-aarch64-unknown-linux-gnu-install_only.tar.gz"
               ],
               "distutils_content": "",
               "strip_prefix": "python",
@@ -2501,13 +2560,13 @@
             "bzlFile": "@@rules_python~//python:repositories.bzl",
             "ruleClassName": "python_repository",
             "attributes": {
-              "sha256": "916c35125b5d8323a21526d7a9154ca626453f63d0878e95b9f613a95006c990",
+              "sha256": "b042c966920cf8465385ca3522986b12d745151a72c060991088977ca36d3883",
               "patches": [],
               "platform": "aarch64-apple-darwin",
-              "python_version": "3.11.6",
-              "release_filename": "20231002/cpython-3.11.6+20231002-aarch64-apple-darwin-install_only.tar.gz",
+              "python_version": "3.11.7",
+              "release_filename": "20240107/cpython-3.11.7+20240107-aarch64-apple-darwin-install_only.tar.gz",
               "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20231002/cpython-3.11.6+20231002-aarch64-apple-darwin-install_only.tar.gz"
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-aarch64-apple-darwin-install_only.tar.gz"
               ],
               "distutils_content": "",
               "strip_prefix": "python",
@@ -2519,13 +2578,13 @@
             "bzlFile": "@@rules_python~//python:repositories.bzl",
             "ruleClassName": "python_repository",
             "attributes": {
-              "sha256": "7937035f690a624dba4d014ffd20c342e843dd46f89b0b0a1e5726b85deb8eaf",
+              "sha256": "b44e1b74afe75c7b19143413632c4386708ae229117f8f950c2094e9681d34c7",
               "patches": [],
               "platform": "ppc64le-unknown-linux-gnu",
-              "python_version": "3.11.6",
-              "release_filename": "20231002/cpython-3.11.6+20231002-ppc64le-unknown-linux-gnu-install_only.tar.gz",
+              "python_version": "3.11.7",
+              "release_filename": "20240107/cpython-3.11.7+20240107-ppc64le-unknown-linux-gnu-install_only.tar.gz",
               "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20231002/cpython-3.11.6+20231002-ppc64le-unknown-linux-gnu-install_only.tar.gz"
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-ppc64le-unknown-linux-gnu-install_only.tar.gz"
               ],
               "distutils_content": "",
               "strip_prefix": "python",
@@ -2537,13 +2596,13 @@
             "bzlFile": "@@rules_python~//python:repositories.bzl",
             "ruleClassName": "python_repository",
             "attributes": {
-              "sha256": "178cb1716c2abc25cb56ae915096c1a083e60abeba57af001996e8bc6ce1a371",
+              "sha256": "a0e615eef1fafdc742da0008425a9030b7ea68a4ae4e73ac557ef27b112836d4",
               "patches": [],
               "platform": "x86_64-apple-darwin",
-              "python_version": "3.11.6",
-              "release_filename": "20231002/cpython-3.11.6+20231002-x86_64-apple-darwin-install_only.tar.gz",
+              "python_version": "3.11.7",
+              "release_filename": "20240107/cpython-3.11.7+20240107-x86_64-apple-darwin-install_only.tar.gz",
               "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20231002/cpython-3.11.6+20231002-x86_64-apple-darwin-install_only.tar.gz"
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-x86_64-apple-darwin-install_only.tar.gz"
               ],
               "distutils_content": "",
               "strip_prefix": "python",
@@ -2583,13 +2642,13 @@
             "bzlFile": "@@rules_python~//python:repositories.bzl",
             "ruleClassName": "python_repository",
             "attributes": {
-              "sha256": "3933545e6d41462dd6a47e44133ea40995bc6efeed8c2e4cbdf1a699303e95ea",
+              "sha256": "67077e6fa918e4f4fd60ba169820b00be7c390c497bf9bc9cab2c255ea8e6f3e",
               "patches": [],
               "platform": "x86_64-pc-windows-msvc",
-              "python_version": "3.11.6",
-              "release_filename": "20231002/cpython-3.11.6+20231002-x86_64-pc-windows-msvc-shared-install_only.tar.gz",
+              "python_version": "3.11.7",
+              "release_filename": "20240107/cpython-3.11.7+20240107-x86_64-pc-windows-msvc-shared-install_only.tar.gz",
               "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20231002/cpython-3.11.6+20231002-x86_64-pc-windows-msvc-shared-install_only.tar.gz"
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-x86_64-pc-windows-msvc-shared-install_only.tar.gz"
               ],
               "distutils_content": "",
               "strip_prefix": "python",
@@ -2601,13 +2660,13 @@
             "bzlFile": "@@rules_python~//python:repositories.bzl",
             "ruleClassName": "python_repository",
             "attributes": {
-              "sha256": "ee37a7eae6e80148c7e3abc56e48a397c1664f044920463ad0df0fc706eacea8",
+              "sha256": "4a51ce60007a6facf64e5495f4cf322e311ba9f39a8cd3f3e4c026eae488e140",
               "patches": [],
               "platform": "x86_64-unknown-linux-gnu",
-              "python_version": "3.11.6",
-              "release_filename": "20231002/cpython-3.11.6+20231002-x86_64-unknown-linux-gnu-install_only.tar.gz",
+              "python_version": "3.11.7",
+              "release_filename": "20240107/cpython-3.11.7+20240107-x86_64-unknown-linux-gnu-install_only.tar.gz",
               "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20231002/cpython-3.11.6+20231002-x86_64-unknown-linux-gnu-install_only.tar.gz"
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-x86_64-unknown-linux-gnu-install_only.tar.gz"
               ],
               "distutils_content": "",
               "strip_prefix": "python",
@@ -2632,8 +2691,8 @@
     },
     "@@rules_python~//python/private/bzlmod:internal_deps.bzl%internal_deps": {
       "general": {
-        "bzlTransitiveDigest": "tAJewFr4BDymwVvEQz1a4Dmms8oSLBDb/DgL40QH1S4=",
-        "usagesDigest": "jEca2cu6E95rTWZMv/BqewCtpYASRO1pZ0fkkTAB+io=",
+        "bzlTransitiveDigest": "k05IAnu/N6e9CnPr7q0UXa7U54cIegSInQS0KZiOV9Y=",
+        "usagesDigest": "4Fj9JSpEDoJSLPRSbvSTol2bTL7baZjuA3k9U7kG/1k=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},

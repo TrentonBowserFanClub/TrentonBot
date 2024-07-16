@@ -1,0 +1,12 @@
+cc_library(
+    name = "generic_kinematics_lib",
+    hdrs = [
+        "ikinematics.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/math:vector_lib",
+        "//src/robot/actuator:generic_motor_lib",
+        "@eigen",
+    ],
+)

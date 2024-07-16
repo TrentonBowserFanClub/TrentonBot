@@ -1,7 +1,6 @@
 #include "robot.h"
 
-Robot::Robot(std::vector<DynamixelMotor> motor_list)
-    : motor_list_(motor_list) {}
+Robot::Robot(std::vector<IMotor *> motor_list) : motor_list_(motor_list) {}
 
 bool Robot::SetSpeed(Eigen::Vector2d desired_speed,
                      Eigen::Rotation2Df rotation) {
@@ -12,7 +11,7 @@ bool Robot::SetSpeed(Eigen::Vector2d desired_speed,
   for (auto motor : motor_list_) {
     // Get locations for each motor
     Location motor_location;
-    if (!motor.GetMotorLocation(&motor_location)) {
+    if (!motor->GetMotorLocation(&motor_location)) {
       return false;
     }
 
@@ -21,8 +20,8 @@ bool Robot::SetSpeed(Eigen::Vector2d desired_speed,
     float dot_prod = motor_location.position.dot(desired_speed);
 
     // We then scale our desired speed vector, and rotate it to be
-    // parallel with the wheel
-    Eigen::Vector2d scaled_speed = desired_speed * dot_prod;
+    // parallel with the wheel's rotation
+    Eigen::Vector2d transformed_speed = (desired_speed * dot_prod) * rotation;
   }
 
   return true;
