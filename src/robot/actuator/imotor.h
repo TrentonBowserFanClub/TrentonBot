@@ -1,3 +1,5 @@
+#pragma once
+
 #include "src/math/pid.h"
 #include "src/math/vector_math.h"
 #include <Eigen/Eigen>

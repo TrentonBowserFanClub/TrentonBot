@@ -28,8 +28,9 @@ git_override(
 )
 bazel_dep(name = "rules_go", version = "0.46.0")
 bazel_dep(name = "rules_multirun", version = "0.9.0")
-bazel_dep(name = "platforms", version = "0.0.7")
+bazel_dep(name = "platforms", version = "0.0.9")
 bazel_dep(name = "rules_oci", version = "1.6.0")
+bazel_dep(name = "rules_pkg", version = "1.0.1")
 bazel_dep(name = "rules_python", version = "0.29.0")
 
 # Extensions
@@ -55,6 +56,18 @@ oci.pull(
     digest = "sha256:47d0618fb878d93e1b8cacb184fd8f727ae95c1b85d5959723e1d3e1848e2aba",
     platforms = [
         "linux/amd64",
+        "linux/arm64",
     ],
 )
 use_repo(oci, "py3.11")
+
+oci.pull(
+    name = "gcc",
+    image = "index.docker.io/library/gcc",
+    digest = "sha256:sha256:c24e2fd069574a63513d749a90459eed8b0cc43f3fbb580a0296cdee3ae0df0d",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64",
+    ],
+)
+use_repo(oci, "gcc")

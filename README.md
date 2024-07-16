@@ -9,3 +9,5 @@
 ## Setup
 
 https://github.com/hedronvision/bazel-compile-commands-extractor
+
+TODO get renovate working: https://github.com/renovatebot/renovate

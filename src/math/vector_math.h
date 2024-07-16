@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Eigen/Eigen>
 
 // Struct to hold a position (as a vector from the origin) and a rotation of
