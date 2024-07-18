@@ -1,0 +1,72 @@
+cc_library(
+    name = "port_handler_lib",
+    srcs = [
+        "port_handler.cpp",
+        "port_handler_arduino.cpp",
+        "port_handler_linux.cpp",
+        "port_handler_mac.cpp",
+        "port_handler_windows.cpp",
+    ],
+    hdrs = [
+        "port_handler.h",
+        "port_handler_arduino.h",
+        "port_handler_linux.h",
+        "port_handler_mac.h",
+        "port_handler_windows.h",
+    ],
+)
+
+cc_library(
+    name = "packet_handler_lib",
+    srcs = [
+        "packet_handler.cpp",
+        "protocol1_packet_handler.cpp",
+        "protocol2_packet_handler.cpp",
+    ],
+    hdrs = [
+        "packet_handler.h",
+        "protocol1_packet_handler.h",
+        "protocol2_packet_handler.h",
+    ],
+    deps = [
+        ":port_handler_lib",
+    ],
+)
+
+cc_library(
+    name = "group_io_lib",
+    srcs = [
+        "group_bulk_read.cpp",
+        "group_bulk_write.cpp",
+        "group_fast_bulk_read.cpp",
+        "group_fast_sync_read.cpp",
+        "group_handler.cpp",
+        "group_sync_read.cpp",
+        "group_sync_write.cpp",
+    ],
+    hdrs = [
+        "group_bulk_read.h",
+        "group_bulk_write.h",
+        "group_fast_bulk_read.h",
+        "group_fast_sync_read.h",
+        "group_handler.h",
+        "group_sync_read.h",
+        "group_sync_write.h",
+    ],
+    deps = [
+        ":packet_handler_lib",
+        ":port_handler_lib",
+    ],
+)
+
+cc_library(
+    name = "sdk",
+    hdrs = [
+        "dynamixel_sdk.h",
+    ],
+    deps = [
+        ":group_io_lib",
+        ":packet_handler_lib",
+        ":port_handler_lib",
+    ],
+)
