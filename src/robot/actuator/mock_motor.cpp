@@ -72,3 +72,8 @@ bool MockMotor::GetMotorLocation(Location *out_location) {
   *out_location = this->location_;
   return true;
 }
+
+bool MockMotor::GetStatus(MotorStatus *out_status) {
+  *out_status = MotorStatus::INITIALIZED;
+  return true;
+}

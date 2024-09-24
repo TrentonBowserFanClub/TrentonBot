@@ -4,6 +4,8 @@
 #include "src/math/vector_math.h"
 #include <Eigen/Eigen>
 
+enum MotorStatus { UNINITIALIZED = 0, INITIALIZED, FAILED };
+
 class IMotor {
 protected:
   int id_;
@@ -13,6 +15,8 @@ protected:
   const float MAX_SPEED = 100.;
 
 public:
+  // TODO treat motors as singletons once instantiated
+  // Have a single method for retrieving instances
   IMotor(int id, Location location, bool inverted)
       : id_(id), location_(location), inverted_(inverted){};
   virtual bool GetPosition(int *out_position) = 0;
@@ -29,4 +33,5 @@ public:
   virtual bool SetEnabled(bool enabled) = 0;
   virtual bool GetMaxSpeed(float *out_speed) = 0;
   virtual bool GetMotorLocation(Location *out_location) = 0;
+  virtual bool GetStatus(MotorStatus *out_status) = 0;
 };

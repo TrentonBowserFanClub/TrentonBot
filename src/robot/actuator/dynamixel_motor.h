@@ -1,76 +1,62 @@
 #pragma once
 
 #include "imotor.h"
+#include "src/drivers//dynamixel/dynamixel_sdk.h"
+#include "src/drivers/dynamixel/protocol1_packet_handler.h"
 #include <Eigen/Eigen>
+#include <iostream>
 
-enum DynamixelPropertyType {
-  TORQUE_ENABLE = 0,
-  LED_ENABLE,
-  P_GAIN,
-  I_GAIN,
-  D_GAIN,
-  GOAL_POSITION,
-  MOVING_SPEED,
-  TORQUE_LIMIT,
-  PRESENT_POSITION,
-  PRESENT_SPEED,
-  PRESENT_LOAD,
-  PRESENT_INPUT_VOLTAGE,
-  PRESENT_TEMPERATURE,
-  REGISTERED,
-  MOVING,
-  LOCK,
-  PUNCH,
-  REALTIME_TICK,
-  GOAL_ACCELERATION,
+struct MemoryLayout {
+  int offset;
+  int size;
 };
 
-struct DynamixelMemoryLayout {
-  int torque_enable;
-  int led_enable;
-  int d_gain;
-  int i_gain;
-  int p_gain;
-  int goal_position;
-  int moving_speed;
-  int torque_limit;
-  int present_position;
-  int present_speed;
-  int present_load;
-  int present_input_voltage;
-  int present_temperature;
-  int registered;
-  int moving;
-  int lock;
-  int punch;
-  int realtime_tick;
-  int goal_acceleration;
-};
-
-struct DynamixelConfig {
-  DynamixelMemoryLayout offsets;
-  DynamixelMemoryLayout sizes;
+struct DynamixelMemoryConfig {
+  MemoryLayout torque_enable;
+  MemoryLayout led_enable;
+  MemoryLayout d_gain;
+  MemoryLayout i_gain;
+  MemoryLayout p_gain;
+  MemoryLayout goal_position;
+  MemoryLayout moving_speed;
+  MemoryLayout torque_limit;
+  MemoryLayout present_position;
+  MemoryLayout present_speed;
+  MemoryLayout present_load;
+  MemoryLayout present_input_voltage;
+  MemoryLayout present_temperature;
+  MemoryLayout registered;
+  MemoryLayout moving;
+  MemoryLayout lock;
+  MemoryLayout punch;
+  MemoryLayout realtime_tick;
+  MemoryLayout goal_acceleration;
 };
 
 class DynamixelMotor : IMotor {
 private:
-  DynamixelConfig config_;
-  bool initialized_;
+  const size_t MAX_INIT_ATTEMPTS = 3;
+
+  DynamixelMemoryConfig config_;
+  MotorStatus status_ = MotorStatus::UNINITIALIZED;
+  dynamixel::PortHandler *port_handler_;
+  dynamixel::PacketHandler *packet_handler_;
 
   bool Initialize_();
 
-  bool ValidateCommand_();
+  bool ReadBytes_(MemoryLayout memory, int *out_bytes);
 
-  bool ReadBytes_(int offset, int size, int *out_bytes);
+  bool WriteBytes_(MemoryLayout memory, int value);
 
-  bool WriteBytes_(int offset, int size, int value);
+  bool GetTorqueLimit_(int *out_torque_limit);
 
-  bool GetMemoryProperty_(DynamixelPropertyType property, int *out_value);
-
-  bool SetMemoryProperty_(DynamixelPropertyType property, int value);
+  bool SetTorqueLimit_(int torque_limit);
 
 public:
-  DynamixelMotor(int id, Location location, bool inverted = false);
+  DynamixelMotor(int id, Location location,
+                 dynamixel::PortHandler *port_handler,
+                 dynamixel::PacketHandler *packet_handler,
+                 bool inverted = false);
 
   virtual bool GetPosition(int *out_position);
 
@@ -99,6 +85,8 @@ public:
   virtual bool GetMaxSpeed(float *out_speed);
 
   virtual bool GetMotorLocation(Location *out_location);
+
+  virtual bool GetStatus(MotorStatus *out_status);
 
   bool RawSpeedToNormalizedSpeed(float speed, float *out_speed);
 

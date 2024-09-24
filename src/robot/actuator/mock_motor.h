@@ -49,4 +49,6 @@ public:
   virtual bool GetMaxSpeed(float *out_speed);
 
   virtual bool GetMotorLocation(Location *out_location);
+
+  virtual bool GetStatus(MotorStatus *out_status);
 };
