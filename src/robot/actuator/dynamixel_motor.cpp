@@ -1,74 +1,177 @@
 #include "dynamixel_motor.h"
 
-DynamixelMotor::DynamixelMotor(int id, Location location, bool inverted)
-    : IMotor(id, location, inverted) {
-  DynamixelMemoryLayout offsets = {
-      24, // torque_enable
-      25, // led_enable
-      26, // d_gain
-      27, // i_gain
-      28, // p_gain
-      30, // goal_position
-      32, // moving_speed
-      34, // torque_limit
-      36, // present_position
-      38, // present_speed
-      40, // present_load
-      42, // present_input_voltage
-      43, // present_temperature
-      44, // registered
-      46, // moving
-      47, // lock
-      48, // punch
-      50, // realtime_tick
-      73, // goal_acceleration
+DynamixelMotor::DynamixelMotor(int id, Location location,
+                               dynamixel::PortHandler *port_handler,
+                               dynamixel::PacketHandler *packet_handler,
+                               bool inverted)
+    : IMotor(id, location, inverted), port_handler_(port_handler),
+      packet_handler_(packet_handler) {
+
+  config_ = {
+      {24, 1}, // torque_enable
+      {25, 1}, // led_enable
+      {26, 1}, // d_gain
+      {27, 1}, // i_gain
+      {28, 1}, // p_gain
+      {30, 2}, // goal_position
+      {32, 2}, // moving_speed
+      {34, 2}, // torque_limit
+      {36, 2}, // present_position
+      {38, 2}, // present_speed
+      {40, 2}, // present_load
+      {42, 1}, // present_input_voltage
+      {43, 1}, // present_temperature
+      {44, 1}, // registered
+      {46, 1}, // moving
+      {47, 1}, // lock
+      {48, 2}, // punch
+      {50, 2}, // realtime_tick
+      {73, 1}, // goal_acceleration
   };
 
-  DynamixelMemoryLayout sizes = {
-      1, // torque_enable
-      1, // led_enable
-      1, // d_gain
-      1, // i_gain
-      1, // p_gain
-      2, // goal_position
-      2, // moving_speed
-      2, // torque_limit
-      2, // present_position
-      2, // present_speed
-      2, // present_load
-      1, // present_input_voltage
-      1, // present_temperature
-      1, // registered
-      1, // moving
-      1, // lock
-      2, // punch
-      2, // realtime_tick
-      1, // goal_acceleration
-  };
+  size_t attempts = 0;
+  bool initialized_ = false;
 
-  config_ = {offsets, sizes};
+  while (!initialized_ && attempts < MAX_INIT_ATTEMPTS) {
+    // Try to initialize the motor 3 times
+    initialized_ = Initialize_();
+    attempts++;
+  }
+
+  if (initialized_) {
+    status_ = MotorStatus::INITIALIZED;
+  } else {
+    status_ = MotorStatus::FAILED;
+    std::cout << "FAILURE | ID: " << id << " failed to initialize!"
+              << std::endl;
+  }
 };
 
-bool DynamixelMotor::Initialize_() { return true; }
+bool DynamixelMotor::Initialize_() {
+  // Enable LED
+  if (!SetLED(true)) {
+    return false;
+  }
 
-bool DynamixelMotor::ValidateCommand_() { return true; }
+  // Set default PID values internal to the motor (8, 0, 8)
+  if (!SetPIDGain({8, 0, 8})) {
+    return false;
+  }
 
-bool DynamixelMotor::ReadBytes_(int offset, int size, int *out_bytes) {
+  // Enable the motor
+  if (!SetEnabled(true)) {
+    return false;
+  }
+
+  // Set motor to 100% output torque
+  if (!SetTorqueLimit_(1023)) {
+    return false;
+  }
+
+  // Print out success
+  std::cout << "SUCCESS | ID: " << id_ << " Default configuration applied!"
+            << std::endl;
+
   return true;
 }
 
-bool DynamixelMotor::WriteBytes_(int offset, int size, int value) {
+bool DynamixelMotor::ReadBytes_(MemoryLayout memory, int *out_bytes) {
+  // Would be great if this was templated, rewrite sdk soon (tm)
+  uint8_t out_error;
+  int comm_result;
+
+  switch (memory.size) {
+  case 1: {
+    uint8_t out_data;
+
+    comm_result = packet_handler_->read1ByteTxRx(
+        port_handler_, id_, memory.offset, &out_data, &out_error);
+    *out_bytes = static_cast<int>(out_data);
+  } break;
+
+  case 2: {
+    uint16_t out_data;
+
+    comm_result = packet_handler_->read2ByteTxRx(
+        port_handler_, id_, memory.offset, &out_data, &out_error);
+
+    *out_bytes = static_cast<int>(out_data);
+  } break;
+
+  case 4: {
+    uint32_t out_data;
+
+    comm_result = packet_handler_->read4ByteTxRx(
+        port_handler_, id_, memory.offset, &out_data, &out_error);
+
+    *out_bytes = static_cast<int>(out_data);
+  } break;
+
+  default:
+    return false;
+  }
+
+  if (comm_result != COMM_SUCCESS) {
+    std::cout << "FAILURE | DXID: " << id_ << " | CommResult: " << comm_result
+              << std::endl;
+    return false;
+  }
+
+  if (out_error != 0) {
+    std::cout << "FAILURE | DXID: " << id_ << " | ErrResult: " << out_error
+              << std::endl;
+    return false;
+  }
+
   return true;
 }
 
-bool DynamixelMotor::GetMemoryProperty_(DynamixelPropertyType property,
-                                        int *out_value) {
+bool DynamixelMotor::WriteBytes_(MemoryLayout memory, int value) {
+  // Would be great if this was templated, rewrite sdk soon (tm)
+  uint8_t out_error;
+  int comm_result;
+
+  switch (memory.size) {
+  case 1: {
+    comm_result = packet_handler_->write1ByteTxRx(
+        port_handler_, id_, memory.offset, value, &out_error);
+  } break;
+
+  case 2: {
+    comm_result = packet_handler_->write2ByteTxRx(
+        port_handler_, id_, memory.offset, value, &out_error);
+  } break;
+
+  case 4: {
+    comm_result = packet_handler_->write4ByteTxRx(
+        port_handler_, id_, memory.offset, value, &out_error);
+  } break;
+
+  default:
+    return false;
+  }
+
+  if (comm_result != COMM_SUCCESS) {
+    std::cout << "FAILURE | DXID: " << id_ << " | CommResult: " << comm_result
+              << std::endl;
+    return false;
+  }
+
+  if (out_error != 0) {
+    std::cout << "FAILURE | DXID: " << id_ << " | ErrResult: " << out_error
+              << std::endl;
+    return false;
+  }
+
   return true;
 }
 
-bool DynamixelMotor::SetMemoryProperty_(DynamixelPropertyType property,
-                                        int value) {
-  return true;
+bool DynamixelMotor::GetTorqueLimit_(int *out_torque_limit) {
+  return ReadBytes_(config_.torque_limit, out_torque_limit);
+}
+
+bool DynamixelMotor::SetTorqueLimit_(int torque_limit) {
+  return WriteBytes_(config_.torque_limit, torque_limit);
 }
 
 bool DynamixelMotor::RawSpeedToNormalizedSpeed(float raw_speed,
@@ -117,7 +220,7 @@ bool DynamixelMotor::RawSpeedToNormalizedSpeed(float raw_speed,
   If we need to invert, will produce this range:
   (TODO CHECK) CW (-100) <--- Stopped (0) ---> CCW (100)
   */
-  float inverted_speed = this->inverted_ ? -scaled_speed : scaled_speed;
+  float inverted_speed = inverted_ ? -scaled_speed : scaled_speed;
 
   *out_speed = inverted_speed;
 
@@ -134,8 +237,7 @@ bool DynamixelMotor::NormalizedSpeedToRawSpeed(float normalized_speed,
   If we need to invert, will produce this range:
   (TODO CHECK) CCW (-100) <--- Stopped (0) ---> CW (100)
   */
-  float non_inverted_speed =
-      this->inverted_ ? -normalized_speed : normalized_speed;
+  float non_inverted_speed = inverted_ ? -normalized_speed : normalized_speed;
 
   /*
   Now, we want to scale the speed from this range:
@@ -183,24 +285,22 @@ bool DynamixelMotor::NormalizedSpeedToRawSpeed(float normalized_speed,
 }
 
 bool DynamixelMotor::GetPosition(int *out_position) {
-  return GetMemoryProperty_(DynamixelPropertyType::PRESENT_POSITION,
-                            out_position);
+  return ReadBytes_(config_.present_position, out_position);
 }
 
 bool DynamixelMotor::SetPosition(int position) {
-  return SetMemoryProperty_(DynamixelPropertyType::GOAL_POSITION, position);
+  return WriteBytes_(config_.present_position, position);
 }
 
 bool DynamixelMotor::GetSpeed(float *out_speed) {
   int raw_speed;
 
-  if (!GetMemoryProperty_(DynamixelPropertyType::PRESENT_SPEED, &raw_speed)) {
+  if (!ReadBytes_(config_.present_speed, &raw_speed)) {
     // Fail early if we can't read data from the motor's memory.
     return false;
   }
 
-  return this->RawSpeedToNormalizedSpeed(static_cast<float>(raw_speed),
-                                         out_speed);
+  return RawSpeedToNormalizedSpeed(static_cast<float>(raw_speed), out_speed);
 }
 
 bool DynamixelMotor::SetSpeed(float speed) {
@@ -213,14 +313,13 @@ bool DynamixelMotor::SetSpeed(float speed) {
 
   int casted_value = static_cast<int>(floor(raw_speed));
 
-  return SetMemoryProperty_(DynamixelPropertyType::MOVING_SPEED, casted_value);
+  return WriteBytes_(config_.moving_speed, casted_value);
 }
 
 bool DynamixelMotor::GetAcceleration(float *out_acceleration) {
   int raw_acceleration;
 
-  if (!GetMemoryProperty_(DynamixelPropertyType::GOAL_ACCELERATION,
-                          &raw_acceleration)) {
+  if (!ReadBytes_(config_.goal_acceleration, &raw_acceleration)) {
     return false;
   }
 
@@ -229,14 +328,16 @@ bool DynamixelMotor::GetAcceleration(float *out_acceleration) {
   return true;
 }
 
-bool DynamixelMotor::SetAcceleration(float acceleration) { return true; }
+bool DynamixelMotor::SetAcceleration(float acceleration) {
+  // Not implemented
+  return false;
+}
 
 bool DynamixelMotor::GetPIDGain(PIDGain *out_pid_gain) {
   int kP, kI, kD;
 
-  if (GetMemoryProperty_(DynamixelPropertyType::P_GAIN, &kP) ||
-      GetMemoryProperty_(DynamixelPropertyType::I_GAIN, &kI) ||
-      GetMemoryProperty_(DynamixelPropertyType::D_GAIN, &kD)) {
+  if (!ReadBytes_(config_.p_gain, &kP) || !ReadBytes_(config_.i_gain, &kI) ||
+      !ReadBytes_(config_.d_gain, &kD)) {
     return false;
   }
 
@@ -250,9 +351,8 @@ bool DynamixelMotor::SetPIDGain(PIDGain pid_gain) {
   int kI = static_cast<int>(floor(pid_gain.kI));
   int kD = static_cast<int>(floor(pid_gain.kD));
 
-  if (SetMemoryProperty_(DynamixelPropertyType::P_GAIN, kP) ||
-      SetMemoryProperty_(DynamixelPropertyType::I_GAIN, kI) ||
-      SetMemoryProperty_(DynamixelPropertyType::D_GAIN, kD)) {
+  if (!WriteBytes_(config_.p_gain, kP) || !WriteBytes_(config_.i_gain, kI) ||
+      !WriteBytes_(config_.d_gain, kD)) {
     return false;
   }
 
@@ -262,7 +362,7 @@ bool DynamixelMotor::SetPIDGain(PIDGain pid_gain) {
 bool DynamixelMotor::GetLED(bool *out_enabled) {
   int led_enabled;
 
-  if (!GetMemoryProperty_(DynamixelPropertyType::LED_ENABLE, &led_enabled)) {
+  if (!ReadBytes_(config_.led_enable, &led_enabled)) {
     return false;
   }
 
@@ -272,14 +372,13 @@ bool DynamixelMotor::GetLED(bool *out_enabled) {
 }
 
 bool DynamixelMotor::SetLED(bool enabled) {
-  return SetMemoryProperty_(DynamixelPropertyType::LED_ENABLE, enabled != 0);
+  return WriteBytes_(config_.led_enable, enabled != 0);
 }
 
 bool DynamixelMotor::GetEnabled(bool *out_enabled) {
   int torque_enable;
 
-  if (!GetMemoryProperty_(DynamixelPropertyType::TORQUE_ENABLE,
-                          &torque_enable)) {
+  if (!ReadBytes_(config_.torque_enable, &torque_enable)) {
     return false;
   }
 
@@ -289,16 +388,20 @@ bool DynamixelMotor::GetEnabled(bool *out_enabled) {
 }
 
 bool DynamixelMotor::SetEnabled(bool enabled) {
-  return SetMemoryProperty_(DynamixelPropertyType::TORQUE_ENABLE, enabled != 0);
-  return true;
+  return WriteBytes_(config_.torque_enable, enabled != 0);
 }
 
 bool DynamixelMotor::GetMaxSpeed(float *out_speed) {
-  *out_speed = this->MAX_SPEED;
+  *out_speed = MAX_SPEED;
   return true;
 }
 
 bool DynamixelMotor::GetMotorLocation(Location *out_location) {
-  *out_location = this->location_;
+  *out_location = location_;
+  return true;
+}
+
+bool DynamixelMotor::GetStatus(MotorStatus *out_status) {
+  *out_status = status_;
   return true;
 }

@@ -1,12 +1,11 @@
 cc_library(
-    name = "generic_kinematics_lib",
+    name = "odometry_interface_lib",
     hdrs = [
-        "ikinematics.h",
+        "iodometry.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
         "//src/math:vector_lib",
-        "//src/robot/actuator:generic_motor_lib",
         "@eigen",
     ],
 )

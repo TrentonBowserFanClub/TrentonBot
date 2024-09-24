@@ -20,6 +20,7 @@ cc_library(
     ],
     deps = [
         ":generic_motor_lib",
+        "//src/drivers/dynamixel:sdk",
         "//src/math:math_lib",
         "@eigen",
     ],

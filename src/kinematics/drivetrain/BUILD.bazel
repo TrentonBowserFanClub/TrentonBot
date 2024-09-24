@@ -1,0 +1,63 @@
+cc_library(
+    name = "kinematics_interface_lib",
+    hdrs = [
+        "ikinematics.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/math:vector_lib",
+        "//src/robot/actuator:generic_motor_lib",
+        "@eigen",
+    ],
+)
+
+cc_library(
+    name = "generic_kinematics_lib",
+    srcs = [
+        "generic_kinematics.cpp",
+    ],
+    hdrs = [
+        "generic_kinematics.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":kinematics_interface_lib",
+        "//src/math:vector_lib",
+        "//src/robot/actuator:generic_motor_lib",
+        "@eigen",
+    ],
+)
+
+cc_library(
+    name = "tank_kinematics_lib",
+    srcs = [
+        "tank_kinematics.cpp",
+    ],
+    hdrs = [
+        "tank_kinematics.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":kinematics_interface_lib",
+        "//src/math:vector_lib",
+        "//src/robot/actuator:generic_motor_lib",
+        "@eigen",
+    ],
+)
+
+cc_library(
+    name = "x_kinematics_lib",
+    srcs = [
+        "x_kinematics.cpp",
+    ],
+    hdrs = [
+        "x_kinematics.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":kinematics_interface_lib",
+        "//src/math:vector_lib",
+        "//src/robot/actuator:generic_motor_lib",
+        "@eigen",
+    ],
+)

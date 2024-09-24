@@ -84,7 +84,7 @@ class DynamixelMotor:
             logger.error(
                 f"FAILURE | DXID: '{self.id}' | ReadBytesDXLError: '{self.packet_handler.getRxPacketError(dxl_error)}'"
             )
-            return None
+            return False
         return dxl_value
 
     def __get_memory_property(self, property: str) -> int:

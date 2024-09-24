@@ -1,28 +1,46 @@
 #include "robot.h"
 
-Robot::Robot(std::vector<IMotor *> motor_list) : motor_list_(motor_list) {}
+Robot::Robot(IDrivetrainKinematics *kinematics) : kinematics_(kinematics) {}
 
-bool Robot::SetSpeed(Eigen::Vector2d desired_speed,
-                     Eigen::Rotation2Df rotation) {
-  // We are provided a unit vector for the direction and speed,
-  // and rotation to perform at the same time. We need to perform
-  // the kinematics to determine what the motor speeds for each motor
-  // need to be
-  for (auto motor : motor_list_) {
-    // Get locations for each motor
-    Location motor_location;
-    if (!motor->GetMotorLocation(&motor_location)) {
+bool Robot::Initialize() {
+  dynamixel::PortHandler *port_handler =
+      dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
+
+  // Open port
+  port_handler->openPort();
+
+  // Override default baud rate
+  port_handler->setBaudRate(1000000);
+
+  std::vector<IMotor *> motor_list;
+  if (!kinematics_->GetMotorList(&motor_list)) {
+    return false;
+  }
+
+  // Init each motor
+  // TODO this should move to whatever is controlling the motors
+  for (auto motor : motor_list) {
+    MotorStatus status;
+    if (!motor->GetStatus(&status)) {
       return false;
     }
 
-    // Take the dot product between where we want to go (desired_speed)
-    // and the vector between the center of the robot and the wheel
-    float dot_prod = motor_location.position.dot(desired_speed);
-
-    // We then scale our desired speed vector, and rotate it to be
-    // parallel with the wheel's rotation
-    Eigen::Vector2d transformed_speed = (desired_speed * dot_prod) * rotation;
+    // Fail out if any of the motors aren't successfully initialized
+    if (status != MotorStatus::INITIALIZED) {
+      return false;
+    }
   }
+  return true;
+}
+
+bool Robot::SetVelocity(Movement desired_movement) {
+  // Get the current time in nanoseconds for kinematics to use
+  timespec current_time;
+  clock_gettime(CLOCK_MONOTONIC, &current_time);
+  unsigned int current_time_ns =
+      (current_time.tv_sec * 10 ^ 9) + current_time.tv_nsec;
+
+  kinematics_->InverseKinematics(current_time_ns, desired_movement);
 
   return true;
 }
