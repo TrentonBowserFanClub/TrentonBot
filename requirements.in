@@ -1,6 +1,7 @@
 asyncio
 dynamixel_sdk
 fastapi
+flake8
 jinja2
 numpy
 opencv-python
