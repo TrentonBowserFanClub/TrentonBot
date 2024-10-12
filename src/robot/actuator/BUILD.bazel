@@ -3,6 +3,7 @@ cc_library(
     hdrs = [
         "imotor.h",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         "//src/math:math_lib",
         "//src/math:vector_lib",
@@ -18,6 +19,7 @@ cc_library(
     hdrs = [
         "dynamixel_motor.h",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         ":generic_motor_lib",
         "//src/drivers/dynamixel:sdk",

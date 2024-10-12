@@ -1,5 +1,6 @@
-load("@rules_python//python:defs.bzl", "py_library")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_library")
 
 # Put all robot files in this library
 py_library(
@@ -24,22 +25,25 @@ cc_library(
         "robot.cpp",
     ],
     hdrs = [
-        "imotor.h",
         "robot.h",
     ],
-    deps = ["@eigen"],
-)
-
-cc_binary(
-    name = "robot",
-    srcs = [
-        "robot.cpp",
-    ],
     deps = [
-        "robot_lib",
+        "//src/kinematics/drivetrain:kinematics_interface_lib",
+        "//src/robot/actuator:dynamixel_motor_lib",
         "@eigen",
     ],
 )
+
+# cc_binary(
+#     name = "robot",
+#     srcs = [
+#         "robot.cpp",
+#     ],
+#     deps = [
+#         "robot_lib",
+#         "@eigen",
+#     ],
+# )
 
 cc_binary(
     name = "main",
@@ -59,13 +63,13 @@ pkg_tar(
 
 oci_image(
     name = "image",
-    base = "@docker_lib_ubuntu",
-    entrypoint = ["/example_binary"],
+    base = "@gcc",
+    entrypoint = ["src/robot/main"],
     tars = [":tar"],
 )
 
 oci_tarball(
     name = "image_tarball",
     image = ":image",
-    repo_tags = ["example:latest"],
+    repo_tags = ["trentonbot_robot:latest"],
 )

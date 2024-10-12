@@ -64,7 +64,7 @@ use_repo(oci, "py3.11")
 oci.pull(
     name = "gcc",
     image = "index.docker.io/library/gcc",
-    digest = "sha256:sha256:c24e2fd069574a63513d749a90459eed8b0cc43f3fbb580a0296cdee3ae0df0d",
+    digest = "sha256:c24e2fd069574a63513d749a90459eed8b0cc43f3fbb580a0296cdee3ae0df0d",
     platforms = [
         "linux/amd64",
         "linux/arm64",

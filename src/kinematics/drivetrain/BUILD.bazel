@@ -29,12 +29,12 @@ cc_library(
 )
 
 cc_library(
-    name = "tank_kinematics_lib",
+    name = "tank_drive_kinematics_lib",
     srcs = [
-        "tank_kinematics.cpp",
+        "tank_drive_kinematics.cpp",
     ],
     hdrs = [
-        "tank_kinematics.h",
+        "tank_drive_kinematics.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -46,12 +46,12 @@ cc_library(
 )
 
 cc_library(
-    name = "x_kinematics_lib",
+    name = "x_drive_kinematics_lib",
     srcs = [
-        "x_kinematics.cpp",
+        "x_drive_kinematics.cpp",
     ],
     hdrs = [
-        "x_kinematics.h",
+        "x_drive_kinematics.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
