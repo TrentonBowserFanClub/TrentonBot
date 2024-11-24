@@ -10,4 +10,10 @@
 
 https://github.com/hedronvision/bazel-compile-commands-extractor
 
+After updating the commit in bazelmod (until I get renovate installed), run this command:
+
+```bash
+bazel run @hedron_compile_commands//:refresh_all
+```
+
 TODO get renovate working: https://github.com/renovatebot/renovate

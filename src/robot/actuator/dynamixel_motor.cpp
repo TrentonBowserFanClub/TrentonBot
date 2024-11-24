@@ -3,9 +3,9 @@
 DynamixelMotor::DynamixelMotor(int id, Location location,
                                dynamixel::PortHandler *port_handler,
                                dynamixel::PacketHandler *packet_handler,
-                               bool inverted)
-    : IMotor(id, location, inverted), port_handler_(port_handler),
-      packet_handler_(packet_handler) {
+                               bool inverted, bool is_smoketest)
+    : IMotor(id, location, inverted), is_smoketest_(is_smoketest),
+      port_handler_(port_handler), packet_handler_(packet_handler) {
 
   config_ = {
       {24, 1}, // torque_enable
@@ -76,6 +76,12 @@ bool DynamixelMotor::Initialize_() {
 }
 
 bool DynamixelMotor::ReadBytes_(MemoryLayout memory, int *out_bytes) {
+  if (is_smoketest_) {
+    // If running in smoketest mode, skip any hardware interfacing
+    *out_bytes = 0;
+    return true;
+  }
+
   // Would be great if this was templated, rewrite sdk soon (tm)
   uint8_t out_error;
   int comm_result;
@@ -127,6 +133,11 @@ bool DynamixelMotor::ReadBytes_(MemoryLayout memory, int *out_bytes) {
 }
 
 bool DynamixelMotor::WriteBytes_(MemoryLayout memory, int value) {
+  if (is_smoketest_) {
+    // If running in smoketest mode, skip any hardware interfacing
+    return true;
+  }
+
   // Would be great if this was templated, rewrite sdk soon (tm)
   uint8_t out_error;
   int comm_result;
@@ -172,59 +183,6 @@ bool DynamixelMotor::GetTorqueLimit_(int *out_torque_limit) {
 
 bool DynamixelMotor::SetTorqueLimit_(int torque_limit) {
   return WriteBytes_(config_.torque_limit, torque_limit);
-}
-
-bool DynamixelMotor::RawSpeedToNormalizedSpeed(float raw_speed,
-                                               float *out_speed) {
-  /*
-  Speed is laid out in memory like this:
-  0 0000000000
-  | |--------|
-  | |
-  | -- Velocity
-  -- Polarity
-
-  Speed is returned as a value between 0-2048, where:
-  Stopped: [0, 1024]
-  CCW:     [1-1023]
-  CW:      [1025-2047]
-
-  We want to adjust the ranges to match the following:
-  (TODO CHECK) CCW Full (-1023) <--- Stopped (0) ---> CW Full (1023)
-  */
-  float adjusted_speed;
-
-  if (raw_speed < 1024) {
-    // If we are less than the range midpoint, invert the range.
-    adjusted_speed = -raw_speed;
-  } else {
-    // If we are in the second half of the motor's range, shift
-    // the values back
-    adjusted_speed = raw_speed - 1024;
-  }
-
-  /*
-  Now, we want to scale the speed from this range:
-  (TODO CHECK) CCW (-1023) <--- Stopped (0) ---> CW (1023)
-
-  To match this range:
-  (TODO CHECK) CCW (-100) <--- Stopped (0) ---> CW (100)
-  */
-  float scaled_speed = (adjusted_speed / 1023.) * MAX_SPEED;
-
-  /*
-  The last adjustment we make is to invert the speed, if requested.
-  This allows for easily handling reversed motors:
-  (TODO CHECK) CCW (-100) <--- Stopped (0) ---> CW (100)
-
-  If we need to invert, will produce this range:
-  (TODO CHECK) CW (-100) <--- Stopped (0) ---> CCW (100)
-  */
-  float inverted_speed = inverted_ ? -scaled_speed : scaled_speed;
-
-  *out_speed = inverted_speed;
-
-  return true;
 }
 
 bool DynamixelMotor::NormalizedSpeedToRawSpeed(float normalized_speed,
@@ -280,6 +238,68 @@ bool DynamixelMotor::NormalizedSpeedToRawSpeed(float normalized_speed,
   }
 
   *out_speed = adjusted_speed;
+
+  return true;
+}
+
+/**
+ * @brief Convert raw speed (format used by the motor) to a normalized
+ * form (-100 to 100).
+ *
+ * @param raw_speed
+ * @param out_speed
+ * @return true
+ * @return false
+ */
+bool DynamixelMotor::RawSpeedToNormalizedSpeed(float raw_speed,
+                                               float *out_speed) {
+  /*
+  Speed is laid out in memory like this:
+  0 0000000000
+  | |--------|
+  | |
+  | -- Velocity
+  -- Polarity
+
+  Speed is returned as a value between 0-2048, where:
+  Stopped: [0, 1024]
+  CCW:     [1-1023]
+  CW:      [1025-2047]
+
+  We want to adjust the ranges to match the following:
+  (TODO CHECK) CCW Full (-1023) <--- Stopped (0) ---> CW Full (1023)
+  */
+  float adjusted_speed;
+
+  if (raw_speed < 1024) {
+    // If we are less than the range midpoint, invert the range.
+    adjusted_speed = -raw_speed;
+  } else {
+    // If we are in the second half of the motor's range, shift
+    // the values back
+    adjusted_speed = raw_speed - 1024;
+  }
+
+  /*
+  Now, we want to scale the speed from this range:
+  (TODO CHECK) CCW (-1023) <--- Stopped (0) ---> CW (1023)
+
+  To match this range:
+  (TODO CHECK) CCW (-100) <--- Stopped (0) ---> CW (100)
+  */
+  float scaled_speed = (adjusted_speed / 1023.) * MAX_SPEED;
+
+  /*
+  The last adjustment we make is to invert the speed, if requested.
+  This allows for easily handling reversed motors:
+  (TODO CHECK) CCW (-100) <--- Stopped (0) ---> CW (100)
+
+  If we need to invert, will produce this range:
+  (TODO CHECK) CW (-100) <--- Stopped (0) ---> CCW (100)
+  */
+  float inverted_speed = inverted_ ? -scaled_speed : scaled_speed;
+
+  *out_speed = inverted_speed;
 
   return true;
 }

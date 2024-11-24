@@ -37,6 +37,8 @@ class DynamixelMotor : IMotor {
 private:
   const size_t MAX_INIT_ATTEMPTS = 3;
 
+  bool is_smoketest_;
+
   DynamixelMemoryConfig config_;
   MotorStatus status_ = MotorStatus::UNINITIALIZED;
   dynamixel::PortHandler *port_handler_;
@@ -56,7 +58,11 @@ public:
   DynamixelMotor(int id, Location location,
                  dynamixel::PortHandler *port_handler,
                  dynamixel::PacketHandler *packet_handler,
-                 bool inverted = false);
+                 bool inverted = false, bool is_smoketest = false);
+
+  bool NormalizedSpeedToRawSpeed(float speed, float *out_speed);
+
+  bool RawSpeedToNormalizedSpeed(float speed, float *out_speed);
 
   virtual bool GetPosition(int *out_position);
 
@@ -87,8 +93,4 @@ public:
   virtual bool GetMotorLocation(Location *out_location);
 
   virtual bool GetStatus(MotorStatus *out_status);
-
-  bool RawSpeedToNormalizedSpeed(float speed, float *out_speed);
-
-  bool NormalizedSpeedToRawSpeed(float speed, float *out_speed);
 };

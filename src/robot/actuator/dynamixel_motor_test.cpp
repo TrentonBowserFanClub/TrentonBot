@@ -54,7 +54,8 @@ bool GetNonZeroTestPairs(float max_speed, bool inverted,
 };
 
 TEST(DynamixelMotorTest, TestZeroRawSpeedToNormalizedSpeed) {
-  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)});
+  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
+                       nullptr, nullptr, false, true);
 
   {
     // Confirm that 0 and 1024 raw speeds map to 0 normalized speed.
@@ -74,7 +75,8 @@ TEST(DynamixelMotorTest, TestZeroRawSpeedToNormalizedSpeed) {
 }
 
 TEST(DynamixelMotorTest, TestNonZeroRawSpeedToNormalizedSpeed) {
-  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)});
+  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
+                       nullptr, nullptr, false, true);
 
   float motor_max_speed;
   ASSERT_TRUE(motor.GetMaxSpeed(&motor_max_speed));
@@ -99,7 +101,8 @@ TEST(DynamixelMotorTest, TestNonZeroRawSpeedToNormalizedSpeed) {
 }
 
 TEST(DynamixelMotorTest, TestZeroRawSpeedToNormalizedSpeedWithInvertedMotor) {
-  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)}, true);
+  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
+                       nullptr, nullptr, true, true);
 
   {
     // Confirm that 0 and 1024 raw speeds map to 0 normalized speed.
@@ -120,7 +123,8 @@ TEST(DynamixelMotorTest, TestZeroRawSpeedToNormalizedSpeedWithInvertedMotor) {
 
 TEST(DynamixelMotorTest,
      TestNonZeroRawSpeedToNormalizedSpeedWithInvertedMotor) {
-  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)}, true);
+  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
+                       nullptr, nullptr, true, true);
 
   float motor_max_speed;
   ASSERT_TRUE(motor.GetMaxSpeed(&motor_max_speed));
@@ -145,7 +149,8 @@ TEST(DynamixelMotorTest,
 }
 
 TEST(DynamixelMotorTest, TestZeroNormalizedSpeedToRawSpeed) {
-  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)});
+  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
+                       nullptr, nullptr, false, true);
 
   {
     // Confirm that a normalized speed of 0 maps to 0 raw speed.
@@ -169,7 +174,8 @@ TEST(DynamixelMotorTest, TestZeroNormalizedSpeedToRawSpeed) {
 }
 
 TEST(DynamixelMotorTest, TestNonZeroNormalizedSpeedToRawSpeed) {
-  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)});
+  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
+                       nullptr, nullptr, false, true);
 
   float motor_max_speed;
   ASSERT_TRUE(motor.GetMaxSpeed(&motor_max_speed));
@@ -194,7 +200,8 @@ TEST(DynamixelMotorTest, TestNonZeroNormalizedSpeedToRawSpeed) {
 }
 
 TEST(DynamixelMotorTest, TestZeroNormalizedSpeedToRawSpeedWithInvertedMotor) {
-  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)}, true);
+  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
+                       nullptr, nullptr, true, true);
 
   {
     // Confirm that a normalized speed of 0 maps to 0 raw speed.
@@ -219,7 +226,8 @@ TEST(DynamixelMotorTest, TestZeroNormalizedSpeedToRawSpeedWithInvertedMotor) {
 
 TEST(DynamixelMotorTest,
      TestNonZeroNormalizedSpeedToRawSpeedWithInvertedMotor) {
-  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)}, true);
+  DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
+                       nullptr, nullptr, true, true);
 
   float motor_max_speed;
   ASSERT_TRUE(motor.GetMaxSpeed(&motor_max_speed));
