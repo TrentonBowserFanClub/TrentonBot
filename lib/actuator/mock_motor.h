@@ -20,7 +20,9 @@ private:
   bool motor_enable_ = false;
 
 public:
-  MockMotor(int id, Location location, bool inverted = false);
+  MockMotor(int id, Pose2D location, bool inverted = false);
+
+  virtual bool Initialize();
 
   virtual bool GetPosition(int *out_position);
 
@@ -46,9 +48,9 @@ public:
 
   virtual bool SetEnabled(bool enabled);
 
-  virtual bool GetMaxSpeed(float *out_speed);
+  virtual float GetMaxSpeed();
 
-  virtual bool GetMotorLocation(Location *out_location);
+  virtual Pose2D GetMotorLocation();
 
-  virtual bool GetStatus(MotorStatus *out_status);
+  virtual MotorStatus GetStatus();
 };

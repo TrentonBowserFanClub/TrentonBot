@@ -1,5 +1,5 @@
 cc_library(
-    name = "math_lib",
+    name = "pid",
     hdrs = [
         "pid.h",
     ],
@@ -7,7 +7,7 @@ cc_library(
 )
 
 cc_library(
-    name = "vector_lib",
+    name = "vector",
     hdrs = [
         "vector_math.h",
     ],

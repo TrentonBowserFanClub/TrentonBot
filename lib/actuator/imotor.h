@@ -1,7 +1,7 @@
 #pragma once
 
-#include "src/math/pid.h"
-#include "src/math/vector_math.h"
+#include "lib/math/pid.h"
+#include "lib/math/vector_math.h"
 #include <Eigen/Eigen>
 
 enum MotorStatus { UNINITIALIZED = 0, INITIALIZED, FAILED };
@@ -9,16 +9,18 @@ enum MotorStatus { UNINITIALIZED = 0, INITIALIZED, FAILED };
 class IMotor {
 protected:
   int id_;
-  Location location_;
+  Pose2D location_;
   bool inverted_;
+  bool initialized_;
 
   const float MAX_SPEED = 100.;
 
 public:
   // TODO treat motors as singletons once instantiated
   // Have a single method for retrieving instances
-  IMotor(int id, Location location, bool inverted)
+  IMotor(int id, Pose2D location, bool inverted)
       : id_(id), location_(location), inverted_(inverted){};
+  virtual bool Initialize() = 0;
   virtual bool GetPosition(int *out_position) = 0;
   virtual bool SetPosition(int position) = 0;
   virtual bool GetSpeed(float *out_speed) = 0;
@@ -31,7 +33,7 @@ public:
   virtual bool SetLED(bool enabled) = 0;
   virtual bool GetEnabled(bool *out_enabled) = 0;
   virtual bool SetEnabled(bool enabled) = 0;
-  virtual bool GetMaxSpeed(float *out_speed) = 0;
-  virtual bool GetMotorLocation(Location *out_location) = 0;
-  virtual bool GetStatus(MotorStatus *out_status) = 0;
+  virtual float GetMaxSpeed() = 0;
+  virtual Pose2D GetMotorLocation() = 0;
+  virtual MotorStatus GetStatus() = 0;
 };

@@ -1,0 +1,7 @@
+cc_library(
+    name = "subsystems",
+    hdrs = [
+        "subsystem.h",
+    ],
+    visibility = ["//visibility:public"],
+)

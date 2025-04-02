@@ -1,50 +1,13 @@
 #include "dynamixel_motor.h"
 
-DynamixelMotor::DynamixelMotor(int id, Location location,
+DynamixelMotor::DynamixelMotor(int id, Pose2D location,
                                dynamixel::PortHandler *port_handler,
                                dynamixel::PacketHandler *packet_handler,
                                bool inverted, bool is_smoketest)
     : IMotor(id, location, inverted), is_smoketest_(is_smoketest),
       port_handler_(port_handler), packet_handler_(packet_handler) {
 
-  config_ = {
-      {24, 1}, // torque_enable
-      {25, 1}, // led_enable
-      {26, 1}, // d_gain
-      {27, 1}, // i_gain
-      {28, 1}, // p_gain
-      {30, 2}, // goal_position
-      {32, 2}, // moving_speed
-      {34, 2}, // torque_limit
-      {36, 2}, // present_position
-      {38, 2}, // present_speed
-      {40, 2}, // present_load
-      {42, 1}, // present_input_voltage
-      {43, 1}, // present_temperature
-      {44, 1}, // registered
-      {46, 1}, // moving
-      {47, 1}, // lock
-      {48, 2}, // punch
-      {50, 2}, // realtime_tick
-      {73, 1}, // goal_acceleration
-  };
-
-  size_t attempts = 0;
-  bool initialized_ = false;
-
-  while (!initialized_ && attempts < MAX_INIT_ATTEMPTS) {
-    // Try to initialize the motor 3 times
-    initialized_ = Initialize_();
-    attempts++;
-  }
-
-  if (initialized_) {
-    status_ = MotorStatus::INITIALIZED;
-  } else {
-    status_ = MotorStatus::FAILED;
-    std::cout << "FAILURE | ID: " << id << " failed to initialize!"
-              << std::endl;
-  }
+  initialized_ = this->Initialize();
 };
 
 bool DynamixelMotor::Initialize_() {
@@ -185,8 +148,35 @@ bool DynamixelMotor::SetTorqueLimit_(int torque_limit) {
   return WriteBytes_(config_.torque_limit, torque_limit);
 }
 
-bool DynamixelMotor::NormalizedSpeedToRawSpeed(float normalized_speed,
-                                               float *out_speed) {
+/**
+ * @brief Initialization needs to happen after our comms drivers
+ * are configured.
+ *
+ * @return true
+ * @return false
+ */
+bool DynamixelMotor::Initialize() {
+  size_t attempts = 0;
+  bool initialized_ = false;
+
+  while (!initialized_ && attempts < MAX_INIT_ATTEMPTS) {
+    // Try to initialize the motor multiple times before failing out
+    initialized_ = Initialize_();
+    attempts++;
+  }
+
+  if (initialized_) {
+    status_ = MotorStatus::INITIALIZED;
+  } else {
+    status_ = MotorStatus::FAILED;
+    std::cout << "FAILURE | ID: " << this->id_ << " failed to initialize!"
+              << std::endl;
+    return false;
+  }
+  return true;
+}
+
+float DynamixelMotor::NormalizedSpeedToRawSpeed(float normalized_speed) {
   /*
   The first adjustment we make is to invert the speed, if requested.
   This allows for easily handling reversed motors:
@@ -237,9 +227,7 @@ bool DynamixelMotor::NormalizedSpeedToRawSpeed(float normalized_speed,
     adjusted_speed = scaled_speed + 1024;
   }
 
-  *out_speed = adjusted_speed;
-
-  return true;
+  return adjusted_speed;
 }
 
 /**
@@ -247,12 +235,10 @@ bool DynamixelMotor::NormalizedSpeedToRawSpeed(float normalized_speed,
  * form (-100 to 100).
  *
  * @param raw_speed
- * @param out_speed
  * @return true
  * @return false
  */
-bool DynamixelMotor::RawSpeedToNormalizedSpeed(float raw_speed,
-                                               float *out_speed) {
+float DynamixelMotor::RawSpeedToNormalizedSpeed(float raw_speed) {
   /*
   Speed is laid out in memory like this:
   0 0000000000
@@ -299,9 +285,7 @@ bool DynamixelMotor::RawSpeedToNormalizedSpeed(float raw_speed,
   */
   float inverted_speed = inverted_ ? -scaled_speed : scaled_speed;
 
-  *out_speed = inverted_speed;
-
-  return true;
+  return inverted_speed;
 }
 
 bool DynamixelMotor::GetPosition(int *out_position) {
@@ -320,16 +304,13 @@ bool DynamixelMotor::GetSpeed(float *out_speed) {
     return false;
   }
 
-  return RawSpeedToNormalizedSpeed(static_cast<float>(raw_speed), out_speed);
+  *out_speed = RawSpeedToNormalizedSpeed(static_cast<float>(raw_speed));
+
+  return true;
 }
 
 bool DynamixelMotor::SetSpeed(float speed) {
-  float raw_speed;
-
-  if (!NormalizedSpeedToRawSpeed(speed, &raw_speed)) {
-    // Fail early if we don't convert the speed correctly
-    return false;
-  }
+  float raw_speed = NormalizedSpeedToRawSpeed(speed);
 
   int casted_value = static_cast<int>(floor(raw_speed));
 
@@ -411,17 +392,8 @@ bool DynamixelMotor::SetEnabled(bool enabled) {
   return WriteBytes_(config_.torque_enable, enabled != 0);
 }
 
-bool DynamixelMotor::GetMaxSpeed(float *out_speed) {
-  *out_speed = MAX_SPEED;
-  return true;
-}
+float DynamixelMotor::GetMaxSpeed() { return MAX_SPEED; }
 
-bool DynamixelMotor::GetMotorLocation(Location *out_location) {
-  *out_location = location_;
-  return true;
-}
+Pose2D DynamixelMotor::GetMotorLocation() { return location_; }
 
-bool DynamixelMotor::GetStatus(MotorStatus *out_status) {
-  *out_status = status_;
-  return true;
-}
+MotorStatus DynamixelMotor::GetStatus() { return status_; }

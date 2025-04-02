@@ -1,7 +1,7 @@
 cc_library(
-    name = "odometry_interface_lib",
+    name = "kinematics_interface_lib",
     hdrs = [
-        "iodometry.h",
+        "kinematics_interfaces.h",
     ],
     visibility = ["//visibility:public"],
     deps = [

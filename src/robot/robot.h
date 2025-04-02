@@ -1,21 +1,21 @@
 #pragma once
 
-#include "src/kinematics/drivetrain/ikinematics.h"
-#include "src/robot/actuator/dynamixel_motor.h"
+#include "lib/actuator/dynamixel_motor.h"
+#include "lib/kinematics/drivetrain/ikinematics.h"
 #include <Eigen/Eigen>
 #include <time.h>
 
 class Robot {
 private:
-  // We need to use pointers to allow polymorphism to work. We
-  // cannot have a vector of references to an abstract class, as
-  // an abstract class itself can never be instantiated.
-  IDrivetrainKinematics *kinematics_;
+  std::unique_ptr<DynamixelMotor> front_left;
+  std::unique_ptr<DynamixelMotor> front_right;
+  std::unique_ptr<DynamixelMotor> rear_left;
+  std::unique_ptr<DynamixelMotor> rear_right;
 
 public:
-  Robot(IDrivetrainKinematics *kinematics_);
+  Robot();
 
   bool Initialize();
 
-  bool SetVelocity(Movement desired_movement);
+  bool SetVelocity(Pose2Ddesired_movement);
 };

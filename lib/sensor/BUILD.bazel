@@ -1,0 +1,15 @@
+cc_library(
+    name = "encoder",
+    hdrs = [
+        "encoder_interface.h",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "gyro",
+    hdrs = [
+        "gyro_interface.h",
+    ],
+    visibility = ["//visibility:public"],
+)

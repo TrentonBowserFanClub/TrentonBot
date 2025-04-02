@@ -1,4 +1,7 @@
 #include "robot.h"
+#include <memory>
+#include <unordered_map>
+#include <unordered_set>
 
 Robot::Robot(IDrivetrainKinematics *kinematics) : kinematics_(kinematics) {}
 
@@ -12,35 +15,47 @@ bool Robot::Initialize() {
   // Override default baud rate
   port_handler->setBaudRate(1000000);
 
-  std::vector<IMotor *> motor_list;
-  if (!kinematics_->GetMotorList(&motor_list)) {
-    return false;
-  }
+  // Get packet handler
+  dynamixel::PacketHandler *packet_handler =
+      dynamixel::PacketHandler::getPacketHandler(1);
 
-  // Init each motor
-  // TODO this should move to whatever is controlling the motors
-  for (auto motor : motor_list) {
-    MotorStatus status;
-    if (!motor->GetStatus(&status)) {
-      return false;
-    }
+  std::unordered_map<size_t, std::unique_ptr<DynamixelMotor>> motor_map;
 
-    // Fail out if any of the motors aren't successfully initialized
-    if (status != MotorStatus::INITIALIZED) {
-      return false;
-    }
-  }
+  // Drivetrain motors
+  Pose2D location = {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)};
+
+  this->front_left = std::make_unique<DynamixelMotor>(
+      11, location, port_handler, packet_handler);
+  this->front_right = std::make_unique<DynamixelMotor>(
+      12, location, port_handler, packet_handler);
+  this->rear_left = std::make_unique<DynamixelMotor>(10, location, port_handler,
+                                                     packet_handler, true);
+  this->rear_right = std::make_unique<DynamixelMotor>(
+      13, location, port_handler, packet_handler, true);
+
   return true;
 }
 
-bool Robot::SetVelocity(Movement desired_movement) {
-  // Get the current time in nanoseconds for kinematics to use
-  timespec current_time;
-  clock_gettime(CLOCK_MONOTONIC, &current_time);
-  unsigned int current_time_ns =
-      (current_time.tv_sec * 10 ^ 9) + current_time.tv_nsec;
+bool Robot::SetVelocity(Pose2D desired_movement) {
+  float clamped_x = fmin(fmax(desired_movement.position.x(), -1), 1);
+  float clamped_y = fmin(fmax(desired_movement.position.y(), -1), 1);
+  float smallest_theta = desired_movement.rotation.smallestAngle();
 
-  kinematics_->InverseKinematics(current_time_ns, desired_movement);
+  float front_left_speed =
+      fmin(fmax(clamped_y + clamped_x - smallest_theta, -1), 1);
+  this->front_left->SetSpeed(front_left_speed);
+
+  float front_right_speed =
+      fmin(fmax(clamped_y - clamped_x - smallest_theta, -1), 1);
+  this->front_right->SetSpeed(front_right_speed);
+
+  float rear_left_speed =
+      fmin(fmax(clamped_y - clamped_x - smallest_theta, -1), 1);
+  this->rear_left->SetSpeed(rear_left_speed);
+
+  float rear_right_speed =
+      fmin(fmax(clamped_y + clamped_x - smallest_theta, -1), 1);
+  this->rear_right->SetSpeed(rear_right_speed);
 
   return true;
 }

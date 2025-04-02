@@ -1,0 +1,27 @@
+# cc_library(
+#     name = "inverse_kinematics_lib",
+#     srcs = [
+#         "inverse_kinematics.cpp",
+#     ],
+#     hdrs = [
+#         "inverse_kinematics.h",
+#     ],
+#     visibility = ["//visibility:public"],
+#     deps = [
+#         "//src/kinematics/inverse:inverse_kinematics_interface_lib",
+#         "//src/robot/actuator:generic_motor_lib",
+#     ],
+# )
+
+# cc_test(
+#     name = "inverse_kinematics_test",
+#     size = "small",
+#     srcs = [
+#         "inverse_kinematics_test.cpp",
+#     ],
+#     deps = [
+#         "//src/robot/actuator:mock_motor_lib",
+#         "@eigen",
+#         "@googletest//:gtest_main",
+#     ],
+# )

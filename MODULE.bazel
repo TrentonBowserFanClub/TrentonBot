@@ -11,27 +11,32 @@ module(
 )
 
 # Project Dependencies
-bazel_dep(name = "aspect_bazel_lib", version = "2.5.3")
-bazel_dep(name = "aspect_rules_lint", version = "0.14.2")
+bazel_dep(name = "aspect_bazel_lib", version = "2.7.7")
+bazel_dep(name = "aspect_rules_lint", version = "1.0.8")
 bazel_dep(name = "aspect_rules_js", version = "1.41.2")
 bazel_dep(name = "bazel_skylib", version = "1.4.2")
-bazel_dep(name = "eigen", version = "3.4.0")
+bazel_dep(name = "buildifier_prebuilt", version = "7.3.1")
+bazel_dep(name = "eigen", version = "4.0.0-20241125.bcr.1")
 bazel_dep(name = "gazelle", version = "0.35.0")
 bazel_dep(name = "googletest", version = "1.14.0")
+
 bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
 git_override(
     module_name = "hedron_compile_commands",
-    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
     commit = "4f28899228fb3ad0126897876f147ca15026151e",
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
     # Replace the commit hash (above) with the latest (https://github.com/hedronvision/bazel-compile-commands-extractor/commits/main).
     # Even better, set up Renovate and let it do the work for you (see "Suggestion: Updates" in the README).
 )
+
+bazel_dep(name = "rules_buf", version = "0.3.0")
 bazel_dep(name = "rules_go", version = "0.46.0")
 bazel_dep(name = "rules_multirun", version = "0.9.0")
 bazel_dep(name = "platforms", version = "0.0.9")
 bazel_dep(name = "rules_oci", version = "1.6.0")
 bazel_dep(name = "rules_pkg", version = "1.0.1")
 bazel_dep(name = "rules_python", version = "0.29.0")
+bazel_dep(name = "toolchains_llvm", version = "1.2.0")
 
 # Extensions
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
@@ -49,25 +54,39 @@ use_repo(pip, "pypi")
 
 # Define our base images for rules_oci to build docker images from
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
-
 oci.pull(
     name = "py3.11",
-    image = "index.docker.io/library/python",
     digest = "sha256:47d0618fb878d93e1b8cacb184fd8f727ae95c1b85d5959723e1d3e1848e2aba",
+    image = "index.docker.io/library/python",
     platforms = [
         "linux/amd64",
         "linux/arm64",
     ],
 )
 use_repo(oci, "py3.11")
-
 oci.pull(
     name = "gcc",
-    image = "index.docker.io/library/gcc",
     digest = "sha256:c24e2fd069574a63513d749a90459eed8b0cc43f3fbb580a0296cdee3ae0df0d",
+    image = "index.docker.io/library/gcc",
     platforms = [
         "linux/amd64",
         "linux/arm64",
     ],
 )
 use_repo(oci, "gcc")
+
+# LLVM Toolchain Configuration
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+llvm.toolchain(
+    llvm_version = "16.0.0",
+)
+use_repo(llvm, "llvm_toolchain", "llvm_toolchain_llvm")
+
+register_toolchains("@llvm_toolchain//:all")
+
+# Protobuf Toolchain Configuration
+buf = use_extension("@rules_buf//buf:extensions.bzl", "buf")
+
+# see https://github.com/bufbuild/buf/releases
+buf.toolchains(version = "v1.34.0")
+use_repo(buf, "rules_buf_toolchains")

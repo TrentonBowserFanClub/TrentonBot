@@ -65,10 +65,9 @@ TEST(DynamixelMotorTest, TestZeroRawSpeedToNormalizedSpeed) {
     for (std::pair<float, float> test_pair : test_pairs) {
       float raw_speed = test_pair.first;
       float expected_normalized_speed = test_pair.second;
-      float actual_normalized_speed;
+      float actual_normalized_speed =
+          motor.RawSpeedToNormalizedSpeed(raw_speed);
 
-      ASSERT_TRUE(
-          motor.RawSpeedToNormalizedSpeed(raw_speed, &actual_normalized_speed));
       ASSERT_EQ(expected_normalized_speed, actual_normalized_speed);
     }
   }
@@ -78,8 +77,7 @@ TEST(DynamixelMotorTest, TestNonZeroRawSpeedToNormalizedSpeed) {
   DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
                        nullptr, nullptr, false, true);
 
-  float motor_max_speed;
-  ASSERT_TRUE(motor.GetMaxSpeed(&motor_max_speed));
+  float motor_max_speed = motor.GetMaxSpeed();
 
   {
     // Confirm that various raw speeds correctly map to their
@@ -90,10 +88,9 @@ TEST(DynamixelMotorTest, TestNonZeroRawSpeedToNormalizedSpeed) {
     for (std::pair<float, float> test_pair : test_pairs) {
       float raw_speed = test_pair.first;
       float expected_normalized_speed = test_pair.second;
-      float actual_normalized_speed;
+      float actual_normalized_speed =
+          motor.RawSpeedToNormalizedSpeed(raw_speed);
 
-      ASSERT_TRUE(
-          motor.RawSpeedToNormalizedSpeed(raw_speed, &actual_normalized_speed));
       ASSERT_NEAR(expected_normalized_speed, actual_normalized_speed,
                   FLOAT_EQUALITY_TOLERANCE);
     }
@@ -112,10 +109,9 @@ TEST(DynamixelMotorTest, TestZeroRawSpeedToNormalizedSpeedWithInvertedMotor) {
     for (std::pair<float, float> test_pair : test_pairs) {
       float raw_speed = test_pair.first;
       float expected_normalized_speed = test_pair.second;
-      float actual_normalized_speed;
+      float actual_normalized_speed =
+          motor.RawSpeedToNormalizedSpeed(raw_speed);
 
-      ASSERT_TRUE(
-          motor.RawSpeedToNormalizedSpeed(raw_speed, &actual_normalized_speed));
       ASSERT_EQ(expected_normalized_speed, actual_normalized_speed);
     }
   }
@@ -126,8 +122,7 @@ TEST(DynamixelMotorTest,
   DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
                        nullptr, nullptr, true, true);
 
-  float motor_max_speed;
-  ASSERT_TRUE(motor.GetMaxSpeed(&motor_max_speed));
+  float motor_max_speed = motor.GetMaxSpeed();
 
   {
     // Confirm that various raw speeds correctly map to their
@@ -138,10 +133,9 @@ TEST(DynamixelMotorTest,
     for (std::pair<float, float> test_pair : test_pairs) {
       float raw_speed = test_pair.first;
       float expected_normalized_speed = test_pair.second;
-      float actual_normalized_speed;
+      float actual_normalized_speed =
+          motor.RawSpeedToNormalizedSpeed(raw_speed);
 
-      ASSERT_TRUE(
-          motor.RawSpeedToNormalizedSpeed(raw_speed, &actual_normalized_speed));
       ASSERT_NEAR(expected_normalized_speed, actual_normalized_speed,
                   FLOAT_EQUALITY_TOLERANCE);
     }
@@ -164,10 +158,9 @@ TEST(DynamixelMotorTest, TestZeroNormalizedSpeedToRawSpeed) {
     for (std::pair<float, float> test_pair : test_pairs) {
       float normalized_speed = test_pair.second;
       float expected_raw_speed = test_pair.first;
-      float actual_raw_speed;
+      float actual_raw_speed =
+          motor.NormalizedSpeedToRawSpeed(normalized_speed);
 
-      ASSERT_TRUE(
-          motor.NormalizedSpeedToRawSpeed(normalized_speed, &actual_raw_speed));
       ASSERT_EQ(expected_raw_speed, actual_raw_speed);
     }
   }
@@ -177,8 +170,7 @@ TEST(DynamixelMotorTest, TestNonZeroNormalizedSpeedToRawSpeed) {
   DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
                        nullptr, nullptr, false, true);
 
-  float motor_max_speed;
-  ASSERT_TRUE(motor.GetMaxSpeed(&motor_max_speed));
+  float motor_max_speed = motor.GetMaxSpeed();
 
   {
     // Confirm that various normalized speeds correctly map to their
@@ -189,10 +181,9 @@ TEST(DynamixelMotorTest, TestNonZeroNormalizedSpeedToRawSpeed) {
     for (std::pair<float, float> test_pair : test_pairs) {
       float normalized_speed = test_pair.second;
       float expected_raw_speed = test_pair.first;
-      float actual_raw_speed;
+      float actual_raw_speed =
+          motor.NormalizedSpeedToRawSpeed(normalized_speed);
 
-      ASSERT_TRUE(
-          motor.NormalizedSpeedToRawSpeed(normalized_speed, &actual_raw_speed));
       ASSERT_NEAR(expected_raw_speed, actual_raw_speed,
                   FLOAT_EQUALITY_TOLERANCE);
     }
@@ -215,10 +206,9 @@ TEST(DynamixelMotorTest, TestZeroNormalizedSpeedToRawSpeedWithInvertedMotor) {
     for (std::pair<float, float> test_pair : test_pairs) {
       float normalized_speed = test_pair.second;
       float expected_raw_speed = test_pair.first;
-      float actual_raw_speed;
+      float actual_raw_speed =
+          motor.NormalizedSpeedToRawSpeed(normalized_speed);
 
-      ASSERT_TRUE(
-          motor.NormalizedSpeedToRawSpeed(normalized_speed, &actual_raw_speed));
       ASSERT_EQ(expected_raw_speed, actual_raw_speed);
     }
   }
@@ -229,8 +219,7 @@ TEST(DynamixelMotorTest,
   DynamixelMotor motor(0, {Eigen::Vector2d(0, 0), Eigen::Rotation2Df(0)},
                        nullptr, nullptr, true, true);
 
-  float motor_max_speed;
-  ASSERT_TRUE(motor.GetMaxSpeed(&motor_max_speed));
+  float motor_max_speed = motor.GetMaxSpeed();
 
   {
     // Confirm that various normalized speeds correctly map to their
@@ -241,10 +230,9 @@ TEST(DynamixelMotorTest,
     for (std::pair<float, float> test_pair : test_pairs) {
       float normalized_speed = test_pair.second;
       float expected_raw_speed = test_pair.first;
-      float actual_raw_speed;
+      float actual_raw_speed =
+          motor.NormalizedSpeedToRawSpeed(normalized_speed);
 
-      ASSERT_TRUE(
-          motor.NormalizedSpeedToRawSpeed(normalized_speed, &actual_raw_speed));
       ASSERT_NEAR(expected_raw_speed, actual_raw_speed,
                   FLOAT_EQUALITY_TOLERANCE);
     }

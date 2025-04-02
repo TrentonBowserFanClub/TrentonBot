@@ -4,7 +4,7 @@ load("@rules_python//python:defs.bzl", "py_library")
 
 # Put all robot files in this library
 py_library(
-    name = "robot_src",
+    name = "robot_py",
     srcs = [
         "config.py",
         "robot.py",
@@ -20,7 +20,7 @@ py_library(
 )
 
 cc_library(
-    name = "robot_lib",
+    name = "robot_cpp",
     srcs = [
         "robot.cpp",
     ],
@@ -28,22 +28,11 @@ cc_library(
         "robot.h",
     ],
     deps = [
-        "//src/kinematics/drivetrain:kinematics_interface_lib",
-        "//src/robot/actuator:dynamixel_motor_lib",
+        "//lib/actuator:dynamixel_motor",
+        "//lib/kinematics/old:kinematics_interface_lib",
         "@eigen",
     ],
 )
-
-# cc_binary(
-#     name = "robot",
-#     srcs = [
-#         "robot.cpp",
-#     ],
-#     deps = [
-#         "robot_lib",
-#         "@eigen",
-#     ],
-# )
 
 cc_binary(
     name = "main",
@@ -51,7 +40,7 @@ cc_binary(
         "main.cpp",
     ],
     deps = [
-        "robot_lib",
+        "robot_cpp",
         "@eigen",
     ],
 )

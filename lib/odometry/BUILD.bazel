@@ -1,0 +1,16 @@
+cc_library(
+    name = "odometry",
+    srcs = [
+        "odometry.cpp",
+    ],
+    hdrs = [
+        "odometry.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/math:vector",
+        "//lib/sensor:encoder",
+        "//lib/sensor:gyro",
+        "@eigen",
+    ],
+)

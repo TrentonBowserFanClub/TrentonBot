@@ -1,0 +1,21 @@
+cc_library(
+    name = "command",
+    hdrs = [
+        "command.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/subsystems",
+    ],
+)
+
+cc_library(
+    name = "command_scheduler",
+    hdrs = [
+        "command_scheduler.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/subsystems",
+    ],
+)

@@ -1,18 +1,18 @@
 cc_library(
-    name = "generic_motor_lib",
+    name = "generic_motor",
     hdrs = [
         "imotor.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//src/math:math_lib",
-        "//src/math:vector_lib",
+        "//lib/math:pid",
+        "//lib/math:vector",
         "@eigen",
     ],
 )
 
 cc_library(
-    name = "dynamixel_motor_lib",
+    name = "dynamixel_motor",
     srcs = [
         "dynamixel_motor.cpp",
     ],
@@ -21,9 +21,9 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":generic_motor_lib",
-        "//src/drivers/dynamixel:sdk",
-        "//src/math:math_lib",
+        ":generic_motor",
+        "//lib/drivers/dynamixel:sdk",
+        "//lib/math:pid",
         "@eigen",
     ],
 )
@@ -35,23 +35,24 @@ cc_test(
         "dynamixel_motor_test.cpp",
     ],
     deps = [
-        ":dynamixel_motor_lib",
+        ":dynamixel_motor",
         "@eigen",
         "@googletest//:gtest_main",
     ],
 )
 
 cc_library(
-    name = "mock_motor_lib",
+    name = "mock_motor",
     srcs = [
         "mock_motor.cpp",
     ],
     hdrs = [
         "mock_motor.h",
     ],
+    visibility = ["//visibility:public"],
     deps = [
-        ":generic_motor_lib",
-        "//src/math:math_lib",
+        ":generic_motor",
+        "//lib/math:pid",
         "@eigen",
     ],
 )
@@ -63,7 +64,7 @@ cc_test(
         "mock_motor_test.cpp",
     ],
     deps = [
-        ":mock_motor_lib",
+        ":mock_motor",
         "@eigen",
         "@googletest//:gtest_main",
     ],

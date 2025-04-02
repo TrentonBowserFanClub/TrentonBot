@@ -105,8 +105,7 @@ TEST(MockMotorTest, TestLocationConfiguration) {
   /// Confirm we can write and read motor configuration values.
   MockMotor motor(0, {Eigen::Vector2d(1, 2), Eigen::Rotation2Df(M_PI)});
 
-  Location out;
-  EXPECT_TRUE(motor.GetMotorLocation(&out));
+  Pose2D out = motor.GetMotorLocation();
 
   EXPECT_EQ(out.position.x(), 1);
   EXPECT_EQ(out.position.y(), 2);
