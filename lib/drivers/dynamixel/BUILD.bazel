@@ -1,5 +1,5 @@
 cc_library(
-    name = "port_handler_lib",
+    name = "port_handler",
     srcs = [
         "port_handler.cpp",
         "port_handler_arduino.cpp",
@@ -17,7 +17,7 @@ cc_library(
 )
 
 cc_library(
-    name = "packet_handler_lib",
+    name = "packet_handler",
     srcs = [
         "packet_handler.cpp",
         "protocol1_packet_handler.cpp",
@@ -29,12 +29,12 @@ cc_library(
         "protocol2_packet_handler.h",
     ],
     deps = [
-        ":port_handler_lib",
+        ":port_handler",
     ],
 )
 
 cc_library(
-    name = "group_io_lib",
+    name = "group_io",
     srcs = [
         "group_bulk_read.cpp",
         "group_bulk_write.cpp",
@@ -54,8 +54,8 @@ cc_library(
         "group_sync_write.h",
     ],
     deps = [
-        ":packet_handler_lib",
-        ":port_handler_lib",
+        ":packet_handler",
+        ":port_handler",
     ],
 )
 
@@ -66,8 +66,8 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":group_io_lib",
-        ":packet_handler_lib",
-        ":port_handler_lib",
+        ":group_io",
+        ":packet_handler",
+        ":port_handler",
     ],
 )
